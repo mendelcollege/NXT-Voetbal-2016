@@ -1,3 +1,14 @@
 #include "libAanvaller.h"
 
-
+task main()
+{
+    SetSensorLowspeed(IRSEEKERPORT);
+    SetSensorLowspeed(COMPASSPORT);
+    compassbeginval = COMPASVAL;
+    DrawSensorLabels();
+    while(true)
+    {
+        UpdateIRValues();
+        DrawSensorValues();
+    }
+}

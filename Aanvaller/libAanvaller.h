@@ -12,7 +12,11 @@
 #define LIGHTSENSORPORT S3
 #define MULTIPLEXORPORT S4
 
-#define COMPASSVAL SensorHTCompass(S2)
+#define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, richting, afstand)
+
+#define RAWCOMPASSVAL SensorHTCompass(S2)
+#define COMPASSVAL CompassVal()
+#define RELCOMPASSVAL RelCompassVal()
 #define LIGHTVAL SENSOR_3
 #define USVAL1 smuxSensorLegoUS(msensor_S4_1)
 #define USVAL2 smuxSensorLegoUS(msensor_S4_2)
@@ -69,14 +73,21 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength =
   }
 }
 
-inline short CompassVal()
+short CompassVal()
 {
-    return COMPASSVAL - compassbeginval;
+    if(RAWCOMPASSVAL < 0)
+    {
+        return RAWCOMPASSVAL - compassbeginval + 360;
+    }
+    else
+    {
+        return RAWCOMPASSVAL - compassbeginval;
+    }
 }
 
 short RelCompassVal()
 {
-    short tmp = COMPASSVAL - compassbeginval;
+    short tmp = RAWCOMPASSVAL - compassbeginval;
     if(tmp <= 180 && tmp >= -181)
     {
         return tmp;
@@ -96,11 +107,13 @@ void DrawSensorLabels()
     TextOut(5,  LCD_LINE1, "IRdir:");
     TextOut(5,  LCD_LINE2, "IRdist:");
     TextOut(5,  LCD_LINE3, "Compass:");
-    TextOut(5,  LCD_LINE4, "US1:");
-    TextOut(55, LCD_LINE4, "US2:");
-    TextOut(5,  LCD_LINE5, "US3:");
-    TextOut(55, LCD_LINE5, "US4:");
+    TextOut(5,  LCD_LINE4, "Light:");
+    TextOut(5,  LCD_LINE5, "US1:");
+    TextOut(55, LCD_LINE5, "US2:");
+    TextOut(5,  LCD_LINE6, "US3:");
+    TextOut(55, LCD_LINE6, "US4:");
 }
+
 
 void DrawSensorValues()
 {
@@ -108,15 +121,17 @@ void DrawSensorValues()
     TextOut(30, LCD_LINE2, "    ");
     NumOut(30,  LCD_LINE2, afstand);
     TextOut(30, LCD_LINE3, "    ");
-    NumOut(30,  LCD_LINE3, RelCompassVal());
-/*
+    NumOut(30,  LCD_LINE3, RELCOMPASSVAL);
     TextOut(30, LCD_LINE4, "   ");
-    NumOut(30,  LCD_LINE4, USVAL1);
-    TextOut(80, LCD_LINE4, "   ");
-    NumOut(80,  LCD_LINE4, USVAL2);
+    NumOut(30,  LCD_LINE4, LIGHTVAL);
+/*
     TextOut(30, LCD_LINE5, "   ");
-    NumOut(30,  LCD_LINE5, USVAL3);
+    NumOut(30,  LCD_LINE5, USVAL1);
     TextOut(80, LCD_LINE5, "   ");
-    NumOut(80,  LCD_LINE5, USVAL4);
+    NumOut(80,  LCD_LINE5, USVAL2);
+    TextOut(30, LCD_LINE6, "   ");
+    NumOut(30,  LCD_LINE6, USVAL3);
+    TextOut(80, LCD_LINE6, "   ");
+    NumOut(80,  LCD_LINE6, USVAL4);
 */
 }
