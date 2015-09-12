@@ -1,5 +1,12 @@
 #include "HTSMUX-driver.h"
 
+#define MOTORVOORUIT OUT_B
+#define MOTORSTUUR OUT_A
+#define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
+#define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-(-speed)))
+#define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
+#define TurnRight(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50) 
+
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
 #define LIGHTSENSORPORT S3
@@ -17,7 +24,11 @@
 #define ANGLESENSORUS3 180
 #define ANGLESENSORUS4 270
 
-void HTEnhancedIRSeekerV2(const byte  port, int &dir, int &strength)
+int richting;
+int afstand;
+short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
+
+void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength = afstand)
 {
   int cResp;
   byte cmdBuf[] = {0x10, 0x43};
@@ -58,8 +69,6 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir, int &strength)
   }
 }
 
-short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
-
 inline short CompassVal()
 {
     return COMPASSVAL - compassbeginval;
@@ -82,4 +91,32 @@ short RelCompassVal()
     }
 }
 
+void DrawSensorLabels()
+{
+    TextOut(5,  LCD_LINE1, "IRdir:");
+    TextOut(5,  LCD_LINE2, "IRdist:");
+    TextOut(5,  LCD_LINE3, "Compass:");
+    TextOut(5,  LCD_LINE4, "US1:");
+    TextOut(55, LCD_LINE4, "US2:");
+    TextOut(5,  LCD_LINE5, "US3:");
+    TextOut(55, LCD_LINE5, "US4:");
+}
 
+void DrawSensorValues()
+{
+    NumOut(30,  LCD_LINE1, richting);
+    TextOut(30, LCD_LINE2, "    ");
+    NumOut(30,  LCD_LINE2, afstand);
+    TextOut(30, LCD_LINE3, "    ");
+    NumOut(30,  LCD_LINE3, RelCompassVal());
+/*
+    TextOut(30, LCD_LINE4, "   ");
+    NumOut(30,  LCD_LINE4, USVAL1);
+    TextOut(80, LCD_LINE4, "   ");
+    NumOut(80,  LCD_LINE4, USVAL2);
+    TextOut(30, LCD_LINE5, "   ");
+    NumOut(30,  LCD_LINE5, USVAL3);
+    TextOut(80, LCD_LINE5, "   ");
+    NumOut(80,  LCD_LINE5, USVAL4);
+*/
+}

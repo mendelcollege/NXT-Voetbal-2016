@@ -1,0 +1,46 @@
+#define MOTORVOORUIT OUT_B
+#define MOTORSTUUR OUT_A
+
+task main()
+{
+    while(true)
+    {
+        OnFwd(MOTORVOORUIT, 100);
+        Wait(1000);
+        Off(MOTORVOORUIT);
+        
+        OnFwd(MOTORSTUUR, 100);
+        Wait(500);
+        Off(MOTORSTUUR);
+        
+        OnRev(MOTORVOORUIT, 100);
+        Wait(500);
+        Off(MOTORVOORUIT);
+        
+        OnRev(MOTORSTUUR, 100);
+        Wait(500);
+        Off(MOTORSTUUR);
+        
+        OnRev(MOTORVOORUIT, 100);
+        Wait(500);
+        Off(MOTORVOORUIT);
+        
+        OnRev(MOTORVOORUIT, 100);
+        OnRev(MOTORSTUUR, 50);
+        Wait(2000);
+        OnFwd(MOTORSTUUR, 50);
+        Wait(2000);
+        Off(MOTORVOORUIT);
+        
+        OnFwd(MOTORVOORUIT, 100);
+        repeat(8)
+        {
+            OnFwd(MOTORSTUUR, 100);
+            Wait(250);
+            OnRev(MOTORSTUUR, 100);
+            Wait(250);
+        }
+        Off(MOTORVOORUIT);
+    }
+}
+
