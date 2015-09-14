@@ -3,8 +3,8 @@
 task main()
 {
     SetSensorLowspeed(IRSEEKERPORT);
-    SetSensorLowspeed(COMPASSPORT);
-    compassbeginval = COMPASVAL;
+    SetSensorLowspeed(COMPASSSENSORPORT);
+    compassbeginval = COMPASSVAL;
     DrawSensorLabels();
     while(true)
     {
