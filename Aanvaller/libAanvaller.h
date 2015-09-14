@@ -104,34 +104,34 @@ short RelCompassVal()
 
 void DrawSensorLabels()
 {
-    TextOut(5,  LCD_LINE1, "IRdir:");
-    TextOut(5,  LCD_LINE2, "IRdist:");
-    TextOut(5,  LCD_LINE3, "Compass:");
-    TextOut(5,  LCD_LINE4, "Light:");
-    TextOut(5,  LCD_LINE5, "US1:");
-    TextOut(55, LCD_LINE5, "US2:");
-    TextOut(5,  LCD_LINE6, "US3:");
-    TextOut(55, LCD_LINE6, "US4:");
+    TextOut(0,  LCD_LINE1, "IRdir:");
+    TextOut(0,  LCD_LINE2, "IRdist:");
+    TextOut(0,  LCD_LINE3, "Compass:");
+    TextOut(0,  LCD_LINE4, "Light:");
+    TextOut(0,  LCD_LINE5, "US1:");
+    TextOut(50, LCD_LINE5, "US2:");
+    TextOut(0,  LCD_LINE6, "US3:");
+    TextOut(50, LCD_LINE6, "US4:");
 }
 
 
 void DrawSensorValues()
 {
-    NumOut(30,  LCD_LINE1, richting);
-    TextOut(30, LCD_LINE2, "    ");
-    NumOut(30,  LCD_LINE2, afstand);
-    TextOut(30, LCD_LINE3, "    ");
-    NumOut(30,  LCD_LINE3, RELCOMPASSVAL);
-    TextOut(30, LCD_LINE4, "   ");
-    NumOut(30,  LCD_LINE4, LIGHTVAL);
+    NumOut(50,  LCD_LINE1, richting);
+    TextOut(50, LCD_LINE2, "    ");
+    NumOut(50,  LCD_LINE2, afstand);
+    TextOut(50, LCD_LINE3, "    ");
+    NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
+    TextOut(50, LCD_LINE4, "   ");
+    NumOut(50,  LCD_LINE4, LIGHTVAL);
 /*
-    TextOut(30, LCD_LINE5, "   ");
-    NumOut(30,  LCD_LINE5, USVAL1);
-    TextOut(80, LCD_LINE5, "   ");
-    NumOut(80,  LCD_LINE5, USVAL2);
-    TextOut(30, LCD_LINE6, "   ");
-    NumOut(30,  LCD_LINE6, USVAL3);
-    TextOut(80, LCD_LINE6, "   ");
-    NumOut(80,  LCD_LINE6, USVAL4);
+    TextOut(25, LCD_LINE5, "   ");
+    NumOut(25,  LCD_LINE5, USVAL1);
+    TextOut(75, LCD_LINE5, "   ");
+    NumOut(75,  LCD_LINE5, USVAL2);
+    TextOut(25, LCD_LINE6, "   ");
+    NumOut(25,  LCD_LINE6, USVAL3);
+    TextOut(75, LCD_LINE6, "   ");
+    NumOut(75,  LCD_LINE6, USVAL4);
 */
 }
