@@ -1,5 +1,6 @@
 #include "HTSMUX-driver.h"
 
+//Motors
 #define MOTORVOORUIT OUT_B
 #define MOTORSTUUR OUT_A
 #define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
@@ -7,13 +8,14 @@
 #define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
 #define TurnRight(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50) 
 
+//Port aliases
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
 #define LIGHTSENSORPORT S3
 #define MULTIPLEXORPORT S4
 
+//Sensors aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, richting, afstand)
-
 #define RAWCOMPASSVAL SensorHTCompass(S2)
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
@@ -23,10 +25,26 @@
 #define USVAL3 smuxSensorLegoUS(msensor_S4_3)
 #define USVAL4 smuxSensorLegoUS(msensor_S4_4)
 
+//Sensor placement
 #define ANGLESENSORUS1 0
 #define ANGLESENSORUS2 90
 #define ANGLESENSORUS3 180
 #define ANGLESENSORUS4 270
+
+//IRBall
+#define BALLDIRLEFT richting > 5
+#define BALLDIRRIGHT richting < 5 && richting != 0
+#define BALLDIRSTRAIGHT richting == 5
+#define BALLDIRUNKNOWN richting == 0
+#define POSSESSIONTHRESHOLD 300
+
+enum ballstate
+{
+    left,
+    right,
+    straigt,
+    unknown
+};
 
 int richting;
 int afstand;
@@ -134,4 +152,11 @@ void DrawSensorValues()
     TextOut(75, LCD_LINE6, "   ");
     NumOut(75,  LCD_LINE6, USVAL4);
 */
+}
+
+void KickSmit()
+{
+    OnFwd(OUT_C, 100);
+    Wait(100);
+    Float(OUT_C);
 }

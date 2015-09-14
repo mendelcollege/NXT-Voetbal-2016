@@ -1,0 +1,39 @@
+#include "libAanvaller"
+
+task main()
+{  
+    SetSensorLowspeed(IRSEEKERPORT);
+    SetSensorLowspeed(COMPASSSENSORPORT);
+    SetSensorLight(LIGHTSENSORPORT);
+    SetSensorLowspeed(MULTIPLEXORPORT);
+    compassbeginval = RAWCOMPASSVAL;
+    DrawSensorLabels();
+    while(true)
+    {
+        UpdateIRValues();
+        DrawSensorValues();
+        if(afstand > POSSESSIONTHRESHOLD)
+        {
+            Off(OUT_AB);
+        }
+        else if(BALLDIRLEFT)
+        {
+            TurnLeft(100);
+            lastballstate = left;
+        }
+        else if(BALLDIRRIGHT)
+        {
+            TurnRight(100);
+            lastballstate = right;
+        }
+        else if(BALLDIRSTRAIGHT)
+        {
+            GoForward(100);
+        }
+        else
+        {
+            if(lastballstate == left) TurnLeft(100);
+            if(lastballstate == right) TurnRight(100);            
+        }        
+    }
+}
