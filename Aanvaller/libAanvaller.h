@@ -3,10 +3,18 @@
 //Motors
 #define MOTORVOORUIT OUT_B
 #define MOTORSTUUR OUT_A
+#define KICKER OUT_C
 #define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
 #define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, speed)
 #define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
-#define TurnRight(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50) 
+#define TurnRight(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
+
+void Kick()
+{
+    OnFwd(KICKER, 100);
+    Wait(100);
+    Off(KICKER);
+} 
 
 //Port aliases
 #define IRSEEKERPORT S1
@@ -39,18 +47,10 @@
 #define POSSESSIONTHRESHOLD 300
 #define BALLPOSSESSION (richting == 5 && afstand > POSSESSIONTHRESHOLD)
 
-enum ballstate
-{
-    left,
-    right,
-    straight,
-    unknown
-};
-
 int richting;
 int afstand;
 short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
-ballstate lastballstate;
+char lastballstate;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength = afstand)
 {
@@ -154,11 +154,4 @@ void DrawSensorValues()
     TextOut(75, LCD_LINE6, "   ");
     NumOut(75,  LCD_LINE6, USVAL4);
 */
-}
-
-void KickSmit()
-{
-    OnFwd(OUT_C, 100);
-    Wait(100);
-    Float(OUT_C);
 }

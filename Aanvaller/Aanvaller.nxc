@@ -5,14 +5,14 @@ void AimAndKick()
     Off(OUT_AB);
     while(true)
     {
-        if(!BALLPOSSESSION) return;
+        if(!BALLPOSSESSION) break;
         if(RELCOMPASSVAL > 5) TurnLeft(75);
         if(RELCOMPASSVAL < -5) TurnRight(75);
         if(abs(RELCOMPASSVAL) < 5)
         {
             GoForward(100);
             Wait(500);
-            KickSmit();
+            Kick();
             Off(OUT_B);
         }
     }
@@ -45,12 +45,12 @@ task main()
         else if(BALLDIRLEFT)
         {
             TurnLeft(100);
-            lastballstate = left;
+            lastballstate = richting;
         }
         else if(BALLDIRRIGHT)
         {
             TurnRight(100);
-            lastballstate = right;
+            lastballstate = richting;
         }
         else
         {
