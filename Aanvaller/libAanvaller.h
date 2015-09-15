@@ -4,7 +4,7 @@
 #define MOTORVOORUIT OUT_B
 #define MOTORSTUUR OUT_A
 #define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
-#define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-(-speed)))
+#define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, speed)
 #define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
 #define TurnRight(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50) 
 
@@ -32,23 +32,25 @@
 #define ANGLESENSORUS4 270
 
 //IRBall
-#define BALLDIRLEFT richting > 5
-#define BALLDIRRIGHT richting < 5 && richting != 0
-#define BALLDIRSTRAIGHT richting == 5
-#define BALLDIRUNKNOWN richting == 0
+#define BALLDIRLEFT (richting > 5)
+#define BALLDIRRIGHT (richting < 5 && richting != 0)
+#define BALLDIRSTRAIGHT (richting == 5)
+#define BALLDIRUNKNOWN (richting == 0)
 #define POSSESSIONTHRESHOLD 300
+#define BALLPOSSESSION (richting == 5 && afstand > POSSESSIONTHRESHOLD)
 
 enum ballstate
 {
     left,
     right,
-    straigt,
+    straight,
     unknown
 };
 
 int richting;
 int afstand;
 short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
+ballstate lastballstate;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength = afstand)
 {

@@ -1,4 +1,22 @@
-#include "libAanvaller"
+#include "libAanvaller.h"
+
+void AimAndKick()
+{
+    Off(OUT_AB);
+    while(true)
+    {
+        if(!BALLPOSSESSION) return;
+        if(RELCOMPASSVAL > 5) TurnLeft(75);
+        if(RELCOMPASSVAL < -5) TurnRight(75);
+        if(abs(RELCOMPASSVAL) < 5)
+        {
+            GoForward(100);
+            Wait(500);
+            KickSmit();
+            Off(OUT_B);
+        }
+    }
+}
 
 task main()
 {  
@@ -7,14 +25,22 @@ task main()
     SetSensorLight(LIGHTSENSORPORT);
     SetSensorLowspeed(MULTIPLEXORPORT);
     compassbeginval = RAWCOMPASSVAL;
+    lastballstate = left;
     DrawSensorLabels();
     while(true)
     {
         UpdateIRValues();
         DrawSensorValues();
-        if(afstand > POSSESSIONTHRESHOLD)
+        if(BALLDIRSTRAIGHT)
         {
-            Off(OUT_AB);
+            if(afstand < POSSESSIONTHRESHOLD)
+            {
+                GoForward(100);
+            }
+            else
+            {
+                AimAndKick();
+            }
         }
         else if(BALLDIRLEFT)
         {
@@ -26,14 +52,10 @@ task main()
             TurnRight(100);
             lastballstate = right;
         }
-        else if(BALLDIRSTRAIGHT)
-        {
-            GoForward(100);
-        }
         else
         {
             if(lastballstate == left) TurnLeft(100);
             if(lastballstate == right) TurnRight(100);            
-        }        
+        } 
     }
 }
