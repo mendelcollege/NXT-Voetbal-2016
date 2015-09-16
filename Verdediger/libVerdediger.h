@@ -16,7 +16,7 @@
 //Sensor value aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, richting, afstand)
 #define LIGHTVAL SENSOR_2
-#define USLEFTVAL SensorUS(USSENSORRIGHTPORT)
+#define USLEFTVAL SensorUS(USSENSORLEFTPORT)
 #define USBACKVAL SensorUS(USSENSORBACKPORT)
 
 //IRBall
@@ -97,7 +97,7 @@ void DrawSensorValues()
     TextOut(50, LCD_LINE3, "   ");
     NumOut(50,  LCD_LINE3, LIGHTVAL);
     TextOut(25, LCD_LINE4, "   ");
-    NumOut(25,  LCD_LINE4, USRIGHTVAL);
+    NumOut(25,  LCD_LINE4, USLEFTVAL);
     TextOut(75, LCD_LINE4, "   ");
     NumOut(75,  LCD_LINE4, USBACKVAL);
 }

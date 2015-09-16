@@ -1,4 +1,22 @@
 #include "libVerdediger.h"
+ 
+task ReturnToX0()
+{
+    if(XPOS > 10) OnFwd(MOTORZIJWAARTS, -100);
+    if(XPOS < -10) OnFwd(MOTORZIJWAARTS, 100);
+    until(abs(XPOS) < 10);
+    Off(MOTORZIJWAARTS);
+    returningtox0 = false;
+}
+
+task ReturnToY0()
+{
+    if(XPOS > 10) OnFwd(MOTORVOORUIT, -100);
+    if(XPOS < -10) OnFwd(MOTORVOORUIT, 100);
+    until(abs(XPOS) < 10);
+    Off(MOTORVOORUIT);
+    returningtox0 = false;
+}
 
 void ReturnToBeginPos()
 {
@@ -8,24 +26,6 @@ void ReturnToBeginPos()
     start ReturnToY0;
     until(returningtox0 == false);
     until(returningtoy0 == false);
-}
-
-task ReturnToX0()
-{
-    if(XPOS > 10) OnFwd(OUT_A, -100);
-    if(XPOS < -10) OnFwd(OUT_A, 100);
-    until(abs(XPOS) < 10);
-    Off(OUT_A);
-    returningtox0 = false;
-}
-
-task ReturnToY0()
-{
-    if(XPOS > 10) OnFwd(OUT_B, -100);
-    if(XPOS < -10) OnFwd(OUT_B, 100);
-    until(abs(XPOS) < 10);
-    Off(OUT_B);
-    returningtox0 = false;
 }
 
 task main()
@@ -45,9 +45,10 @@ task main()
         }
         else if(BALLDIRSTRAIGHT)
         {
+            Off(MOTORZIJWAARTS);
             if(afstand > BALLDISTANCETHRESHOLD)
             {
-                OnFwd(OUT_B, 100);
+                OnFwd(MOTORVOORUIT, 100);
             }
         }
         else if(BALLDIRLEFT)
