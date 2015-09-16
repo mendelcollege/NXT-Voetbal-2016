@@ -1,38 +1,50 @@
 #define MOTORVOORUIT OUT_B
 #define MOTORSTUUR OUT_A
+#define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
+#define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, speed)
+#define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); Off(MOTORVOORUIT)
+#define TurnRight(speed) OnFwd(MOTORSTUUR, speed); Off(MOTORVOORUIT)
 
 task main()
 {
     while(true)
     {
-        OnFwd(MOTORVOORUIT, 100);
+        GoForward(100);
         Wait(1000);
-        Off(MOTORVOORUIT);
         
-        OnFwd(MOTORSTUUR, 100);
+        TurnLeft(100);
         Wait(500);
-        Off(MOTORSTUUR);
         
-        OnRev(MOTORVOORUIT, 100);
+        GoBackward(100);
         Wait(500);
-        Off(MOTORVOORUIT);
         
-        OnRev(MOTORSTUUR, 100);
+        TurnRight(100);
+        Wait(1000);
+        
+        GoBackward(100);
         Wait(500);
-        Off(MOTORSTUUR);
-        
-        OnRev(MOTORVOORUIT, 100);
+                
+        TurnLeft(100);
         Wait(500);
-        Off(MOTORVOORUIT);
         
-        OnRev(MOTORVOORUIT, 100);
-        OnRev(MOTORSTUUR, 50);
-        Wait(2000);
+        //Rij naar achter terwijl je naar links draait
+        OnFwd(MOTORVOORUIT, 100);
         OnFwd(MOTORSTUUR, 50);
         Wait(2000);
-        Off(MOTORVOORUIT);
         
-        OnFwd(MOTORVOORUIT, 100);
+        //Verander richting van stuurwiel
+        OnRev(MOTORSTUUR, 50);
+        Wait(4000);
+        
+        //Stuurwiel weer terug naar oude richting
+        OnFwd(MOTORSTUUR, 50);
+        Wait(2000);
+        
+        //Ga naar voren
+        GoForward(100);
+        Wait(4000);
+        
+        //Wiggle wiggle wiggle
         repeat(8)
         {
             OnFwd(MOTORSTUUR, 100);
@@ -40,7 +52,6 @@ task main()
             OnRev(MOTORSTUUR, 100);
             Wait(250);
         }
-        Off(MOTORVOORUIT);
     }
 }
 

@@ -1,0 +1,73 @@
+#include "libVerdediger.h"
+
+void ReturnToBeginPos()
+{
+    returningtox0 = true;
+    returningtoy0 = true;
+    start ReturnToX0;
+    start ReturnToY0;
+    until(returningtox0 == false);
+    until(returningtoy0 == false);
+}
+
+task ReturnToX0()
+{
+    if(XPOS > 10) OnFwd(OUT_A, -100);
+    if(XPOS < -10) OnFwd(OUT_A, 100);
+    until(abs(XPOS) < 10);
+    Off(OUT_A);
+    returningtox0 = false;
+}
+
+task ReturnToY0()
+{
+    if(XPOS > 10) OnFwd(OUT_B, -100);
+    if(XPOS < -10) OnFwd(OUT_B, 100);
+    until(abs(XPOS) < 10);
+    Off(OUT_B);
+    returningtox0 = false;
+}
+
+task main()
+{
+    SetSensorLowspeed(IRSEEKERPORT);
+    SetSensorLight(LIGHTSENSORPORT);
+    SetSensorLowspeed(USSENSORLEFTPORT);
+    SetSensorLowspeed(USSENSORBACKPORT);
+    x0 = USLEFTVAL;
+    y0 = USBACKVAL;
+    while(true)
+    {
+        UpdateIRValues();
+        if(BALLDIRUNKNOWN)
+        {
+            ReturnToBeginPos();
+        }
+        else if(BALLDIRSTRAIGHT)
+        {
+            if(afstand > BALLPOSSESSIONTHRESHOLD)
+            {
+                
+            }
+            OnFwd(OUT_B, 100);
+        }
+        else if(BALLDIRLEFT)
+        {
+            if(richting < 3)
+            {
+            }
+            else
+            {
+            }
+        }
+        else if(BALLDIRRIGHT)
+        {
+            if(richting > 7)
+            {
+            }
+            else
+            {
+            }
+        }
+    }
+}

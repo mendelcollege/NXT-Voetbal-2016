@@ -3,25 +3,38 @@
 #define MOTORZIJWAARTS OUT_A
 #define KICKER OUT_C
 
-void Kick()
-{
-}
-
 //Port aliases
 #define IRSEEKERPORT S1
 #define LIGHTSENSORPORT S2
-#define USSENSORRIGHTPORT S3
+#define USSENSORLEFTPORT S3
 #define USSENSORBACKPORT S4
 
 //Sensor value aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, richting, afstand)
 #define LIGHTVAL SENSOR_2
-#define USRIGHTVAL SensorUS(USSENSORRIGHTPORT)
+#define USLEFTVAL SensorUS(USSENSORRIGHTPORT)
 #define USBACKVAL SensorUS(USSENSORBACKPORT)
+
+//IRBall
+#define BALLDIRLEFT (richting > 5)
+#define BALLDIRRIGHT (richting < 5)
+#define BALLDIRSTRAIGHT (richting == 5)
+#define BALLDIRUNKNOWN (richting == 0)
+#define POSSESSIONTHRESHOLD 300
+#define BALLPOSSESSION (richting == 5 && afstand > POSSESSIONTHRESHOLD)
 
 int richting;
 int afstand;
 char lastballstate;
+
+//Position
+#define XPOS (USLEFTVAL - x0)
+#define YPOS (USBACKVAL - y0)
+
+unsigned char x0;
+unsigned char y0;
+bool returningtox0;
+bool returningtoy0;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength = afstand)
 {
@@ -84,4 +97,8 @@ void DrawSensorValues()
     NumOut(25,  LCD_LINE4, USRIGHTVAL);
     TextOut(75, LCD_LINE4, "   ");
     NumOut(75,  LCD_LINE4, USBACKVAL);
+}
+
+void Kick()
+{
 }
