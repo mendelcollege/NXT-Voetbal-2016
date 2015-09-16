@@ -45,28 +45,41 @@ task main()
         }
         else if(BALLDIRSTRAIGHT)
         {
-            if(afstand > BALLPOSSESSIONTHRESHOLD)
+            if(afstand > BALLDISTANCETHRESHOLD)
             {
-                
+                OnFwd(OUT_B, 100);
             }
-            OnFwd(OUT_B, 100);
         }
         else if(BALLDIRLEFT)
         {
             if(richting < 3)
             {
+                GoRight(100);
+                Wait(500);
+                GoBackward(100);
+                Wait(1000);
+                //GoLeft(100);
+                //Wait(500);
             }
             else
             {
+                GoLeft(100);
             }
         }
         else if(BALLDIRRIGHT)
         {
             if(richting > 7)
             {
+                GoLeft(100);
+                Wait(500);
+                GoBackward(100);
+                Wait(1000);
+                //GoRight(100);
+                //Wait(500);
             }
             else
             {
+                GoRight(100);
             }
         }
     }

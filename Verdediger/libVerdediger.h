@@ -2,6 +2,10 @@
 #define MOTORVOORUIT OUT_B
 #define MOTORZIJWAARTS OUT_A
 #define KICKER OUT_C
+#define GoRight(speed) OnFwd(MOTORZIJWAARTS, speed); Off(MOTORVOORUIT)
+#define GoLeft(speed) OnFwd(MOTORZIJWAARTS, (-speed)); Off(MOTORVOORUIT)
+#define GoForward(speed) OnFwd(MOTORVOORUIT, speed); Off(MOTORZIJWAARTS)
+#define GoBackward(speed) OnFwd(MOTORVOORUIT, (-speed)); Off(MOTORZIJWAARTS);
 
 //Port aliases
 #define IRSEEKERPORT S1
@@ -20,8 +24,7 @@
 #define BALLDIRRIGHT (richting < 5)
 #define BALLDIRSTRAIGHT (richting == 5)
 #define BALLDIRUNKNOWN (richting == 0)
-#define POSSESSIONTHRESHOLD 300
-#define BALLPOSSESSION (richting == 5 && afstand > POSSESSIONTHRESHOLD)
+#define BALLDISTANCETHRESHOLD 300
 
 int richting;
 int afstand;
