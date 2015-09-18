@@ -30,19 +30,19 @@ task main()
         //Rij naar achter terwijl je naar links draait
         OnFwd(MOTORVOORUIT, 100);
         OnFwd(MOTORSTUUR, 25);
-        Wait(2000);
+        Wait(1000);
         
         //Verander richting van stuurwiel
         OnRev(MOTORSTUUR, 25);
-        Wait(4000);
+        Wait(2000);
         
         //Stuurwiel weer terug naar oude richting
         OnFwd(MOTORSTUUR, 25);
-        Wait(2000);
+        Wait(1000);
         
         //Ga naar voren
         GoForward(100);
-        Wait(4000);
+        Wait(2000);
         
         //Wiggle wiggle wiggle
         repeat(8)

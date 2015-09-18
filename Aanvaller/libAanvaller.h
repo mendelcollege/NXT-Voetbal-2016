@@ -6,8 +6,8 @@
 #define KICKER OUT_C
 #define GoForward(speed) Off(MOTORSTEER); OnFwd(MOTORFORWARD, (-speed))
 #define GoBackward(speed) Off(MOTORSTEER); OnFwd(MOTORFORWARD, speed)
-#define TurnLeft(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, -50)
-#define TurnRight(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, -50)
+#define TurnLeft(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, 0)
+#define TurnRight(speed) OnFwd(MOTORSTEER, (-speed)); OnFwd(MOTORFORWARD, 0)
 
 void Kick()
 {
@@ -44,7 +44,7 @@ void Kick()
 #define BALLDIRRIGHT (dir < 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define POSSESSIONTHRESHOLD 300
+#define POSSESSIONTHRESHOLD 340
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 
 int dir;
@@ -108,7 +108,7 @@ short CompassVal()
 short RelCompassVal()
 {
     short tmp = RAWCOMPASSVAL - compassbeginval;
-    if(tmp <= 180 && tmp >= -181)
+    if(tmp <= 180 && tmp >= -179)
     {
         return tmp;
     }
