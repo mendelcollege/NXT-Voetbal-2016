@@ -3,7 +3,7 @@
 #define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
 #define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, speed)
 #define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); Off(MOTORVOORUIT)
-#define TurnRight(speed) OnFwd(MOTORSTUUR, speed); Off(MOTORVOORUIT)
+#define TurnRight(speed) OnFwd(MOTORSTUUR, (-speed)); Off(MOTORVOORUIT)
 
 task main()
 {
@@ -29,15 +29,15 @@ task main()
         
         //Rij naar achter terwijl je naar links draait
         OnFwd(MOTORVOORUIT, 100);
-        OnFwd(MOTORSTUUR, 50);
+        OnFwd(MOTORSTUUR, 25);
         Wait(2000);
         
         //Verander richting van stuurwiel
-        OnRev(MOTORSTUUR, 50);
+        OnRev(MOTORSTUUR, 25);
         Wait(4000);
         
         //Stuurwiel weer terug naar oude richting
-        OnFwd(MOTORSTUUR, 50);
+        OnFwd(MOTORSTUUR, 25);
         Wait(2000);
         
         //Ga naar voren

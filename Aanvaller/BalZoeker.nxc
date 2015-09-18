@@ -6,24 +6,24 @@ task main()
     SetSensorLowspeed(IRSEEKERPORT);
     SetSensorLowspeed(COMPASSSENSORPORT);
     compassbeginval = RAWCOMPASSVAL;
-    ballstate lastballstate = left;
+    lastballstate =  1;
     while(true)
     {
         UpdateIRValues();
         DrawSensorValues();
-        if(afstand > POSSESSIONTHRESHOLD)
+        if(dist > POSSESSIONTHRESHOLD)
         {
             Off(OUT_AB);
         }
         else if(BALLDIRLEFT)
         {
             TurnLeft(100);
-            lastballstate = left;
+            lastballstate = dir;
         }
         else if(BALLDIRRIGHT)
         {
             TurnRight(100);
-            lastballstate = right;
+            lastballstate = dir;
         }
         else if(BALLDIRSTRAIGHT)
         {
@@ -31,8 +31,8 @@ task main()
         }
         else
         {
-            if(lastballstate == left) TurnLeft(100);
-            if(lastballstate == right) TurnRight(100);            
+            if(lastballstate > 5) TurnLeft(100);
+            if(lastballstate < 5) TurnRight(100);
         }        
     }
 }

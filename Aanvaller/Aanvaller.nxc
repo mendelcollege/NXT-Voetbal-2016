@@ -25,7 +25,7 @@ task main()
     SetSensorLight(LIGHTSENSORPORT);
     SetSensorLowspeed(MULTIPLEXORPORT);
     compassbeginval = RAWCOMPASSVAL;
-    lastballstate = left;
+    lastballstate = 1;
     DrawSensorLabels();
     while(true)
     {
@@ -33,7 +33,7 @@ task main()
         DrawSensorValues();
         if(BALLDIRSTRAIGHT)
         {
-            if(afstand < POSSESSIONTHRESHOLD)
+            if(dist < POSSESSIONTHRESHOLD)
             {
                 GoForward(100);
             }
@@ -45,17 +45,17 @@ task main()
         else if(BALLDIRLEFT)
         {
             TurnLeft(100);
-            lastballstate = richting;
+            lastballstate = dir;
         }
         else if(BALLDIRRIGHT)
         {
             TurnRight(100);
-            lastballstate = richting;
+            lastballstate = dir;
         }
         else
         {
-            if(lastballstate == left) TurnLeft(100);
-            if(lastballstate == right) TurnRight(100);            
+            if(lastballstate > 5) TurnLeft(100);
+            if(lastballstate < 5) TurnRight(100);
         } 
     }
 }

@@ -1,13 +1,13 @@
 #include "HTSMUX-driver.h"
 
 //Motors
-#define MOTORVOORUIT OUT_B
-#define MOTORSTUUR OUT_A
+#define MOTORFORWARD OUT_B
+#define MOTORSTEER OUT_A
 #define KICKER OUT_C
-#define GoForward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, (-speed))
-#define GoBackward(speed) Off(MOTORSTUUR); OnFwd(MOTORVOORUIT, speed)
-#define TurnLeft(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
-#define TurnRight(speed) OnFwd(MOTORSTUUR, speed); OnFwd(MOTORVOORUIT, -50)
+#define GoForward(speed) Off(MOTORSTEER); OnFwd(MOTORFORWARD, (-speed))
+#define GoBackward(speed) Off(MOTORSTEER); OnFwd(MOTORFORWARD, speed)
+#define TurnLeft(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, -50)
+#define TurnRight(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, -50)
 
 void Kick()
 {
@@ -23,7 +23,7 @@ void Kick()
 #define MULTIPLEXORPORT S4
 
 //Sensors aliases
-#define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, richting, afstand)
+#define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, dir, dist)
 #define RAWCOMPASSVAL SensorHTCompass(S2)
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
@@ -40,19 +40,19 @@ void Kick()
 #define ANGLESENSORUS4 270
 
 //IRBall
-#define BALLDIRLEFT (richting > 5)
-#define BALLDIRRIGHT (richting < 5 && richting != 0)
-#define BALLDIRSTRAIGHT (richting == 5)
-#define BALLDIRUNKNOWN (richting == 0)
+#define BALLDIRLEFT (dir > 5)
+#define BALLDIRRIGHT (dir < 5 && dir != 0)
+#define BALLDIRSTRAIGHT (dir == 5)
+#define BALLDIRUNKNOWN (dir == 0)
 #define POSSESSIONTHRESHOLD 300
-#define BALLPOSSESSION (richting == 5 && afstand > POSSESSIONTHRESHOLD)
+#define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 
-int richting;
-int afstand;
+int dir;
+int dist;
 short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
 char lastballstate;
 
-void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength = afstand)
+void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist)
 {
   int cResp;
   byte cmdBuf[] = {0x10, 0x43};
@@ -137,9 +137,9 @@ void DrawSensorLabels()
 
 void DrawSensorValues()
 {
-    NumOut(50,  LCD_LINE1, richting);
+    NumOut(50,  LCD_LINE1, dir);
     TextOut(50, LCD_LINE2, "    ");
-    NumOut(50,  LCD_LINE2, afstand);
+    NumOut(50,  LCD_LINE2, dist);
     TextOut(50, LCD_LINE3, "    ");
     NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
     TextOut(50, LCD_LINE4, "   ");
