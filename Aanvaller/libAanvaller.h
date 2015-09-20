@@ -9,13 +9,6 @@
 #define TurnLeft(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, 0)
 #define TurnRight(speed) OnFwd(MOTORSTEER, (-speed)); OnFwd(MOTORFORWARD, 0)
 
-void Kick()
-{
-    OnFwd(KICKER, 100);
-    Wait(100);
-    Off(KICKER);
-} 
-
 //Port aliases
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
@@ -49,7 +42,6 @@ void Kick()
 
 int dir;
 int dist;
-short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
 char lastballstate;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist)
@@ -93,6 +85,9 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist
   }
 }
 
+//Compass
+short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
+
 short CompassVal()
 {
     if(RAWCOMPASSVAL < 0)
@@ -122,6 +117,7 @@ short RelCompassVal()
     }
 }
 
+//Display
 void DrawSensorLabels()
 {
     TextOut(0,  LCD_LINE1, "IRdir:");
@@ -155,3 +151,13 @@ void DrawSensorValues()
     NumOut(75,  LCD_LINE6, USVAL4);
 */
 }
+
+//Kicker
+#define RECHARGINGTIME 3000
+
+void Kick()
+{
+    OnFwd(KICKER, 100);
+    Wait(100);
+    Off(KICKER);
+} 

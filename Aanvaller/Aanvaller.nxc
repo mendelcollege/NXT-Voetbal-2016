@@ -2,18 +2,32 @@
 
 void AimAndKick()
 {
+    static long tlastkick;
     Off(OUT_AB);
     while(true)
     {
+        TextOut(0, LCD_LINE7, "Richten...   ");
         if(!BALLPOSSESSION) break;
         if(RELCOMPASSVAL > 5) TurnLeft(75);
         if(RELCOMPASSVAL < -5) TurnRight(75);
         if(abs(RELCOMPASSVAL) < 5)
         {
-            GoForward(100);
-            Wait(500);
-            Kick();
-            Off(OUT_B);
+            Off(OUT_AB);
+            if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
+            {
+                TextOut(0, LCD_LINE7, "Kicken...    ");
+                GoForward(100);
+                Wait(500);
+                Kick();
+                Wait(500);
+                Off(OUT_B);
+                tlastkick = CurrentTick();
+                break;
+            }
+            else
+            {
+                TextOut(0, LCD_LINE7, "Recharging...");
+            }
         }
     }
 }
@@ -31,16 +45,11 @@ task main()
     {
         UpdateIRValues();
         DrawSensorValues();
-        if(BALLDIRSTRAIGHT)
+        TextOut(0, LCD_LINE7, "Zoeken...    ");
+        if(dist > POSSESSIONTHRESHOLD)
         {
-            if(dist < POSSESSIONTHRESHOLD)
-            {
-                GoForward(100);
-            }
-            else
-            {
-                AimAndKick();
-            }
+            Off(OUT_AB);
+            //AimAndKick();
         }
         else if(BALLDIRLEFT)
         {
@@ -52,10 +61,14 @@ task main()
             TurnRight(100);
             lastballstate = dir;
         }
+        else if(BALLDIRSTRAIGHT)
+        {
+            GoForward(100);
+        }
         else
         {
             if(lastballstate > 5) TurnLeft(100);
             if(lastballstate < 5) TurnRight(100);
-        } 
+        }        
     }
 }
