@@ -38,6 +38,12 @@ task main()
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorLight(LIGHTSENSORPORT);
     SetSensorLowspeed(MULTIPLEXORPORT);
+    if(!HTSMUXscanPorts(MULTIPLEXORPORT))
+    {
+        // Scan failed, handle the error
+        TextOut(0, LCD_LINE7, "Scan failed!");
+        Wait(2000);
+    }
     compassbeginval = RAWCOMPASSVAL;
     lastballstate = 1;
     DrawSensorLabels();
