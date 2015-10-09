@@ -101,7 +101,3 @@ void DrawSensorValues()
     TextOut(75, LCD_LINE4, "   ");
     NumOut(75,  LCD_LINE4, USBACKVAL);
 }
-
-void Kick()
-{
-}
