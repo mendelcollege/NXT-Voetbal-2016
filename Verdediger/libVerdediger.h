@@ -1,11 +1,36 @@
 //Motors
-#define MOTORVOORUIT OUT_B
-#define MOTORZIJWAARTS OUT_A
-#define KICKER OUT_C
-#define GoRight(speed) OnFwd(MOTORZIJWAARTS, speed); Off(MOTORVOORUIT)
-#define GoLeft(speed) OnFwd(MOTORZIJWAARTS, (-speed)); Off(MOTORVOORUIT)
-#define GoForward(speed) OnFwd(MOTORVOORUIT, speed); Off(MOTORZIJWAARTS)
-#define GoBackward(speed) OnFwd(MOTORVOORUIT, (-speed)); Off(MOTORZIJWAARTS);
+/*
+ * OUT_A:Fwd=rechts Rev=links
+ * OUT_B:Fwd=achteruit Rev=vooruit
+ * OUT_C:Fwd=rechtsom Rev=linksom
+ * naar rechts: OnFwd(OUT_A,100); OnRev(OUT_C,55);
+ * naar links: OnRev(OUT_A,100); OnFwd(OUT_C,58);
+ *
+ *achteruit: OnFwd(OUT_B,100); OnRev(OUT_C,28);
+*/
+#define MOTORFORWARD OUT_B
+#define MOTORSIDE OUT_A
+#define COMPENSATOR OUT_C
+
+task ForwardDriver()
+{
+
+}
+
+task BackwardDriver()
+{
+
+}
+
+task LeftDriver()
+{
+
+}
+
+task RightDriver()
+{
+
+}
 
 //Port aliases
 #define IRSEEKERPORT S1
@@ -36,8 +61,6 @@ char lastballstate;
 
 unsigned char x0;
 unsigned char y0;
-bool returningtox0;
-bool returningtoy0;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = richting, int &strength = afstand)
 {
