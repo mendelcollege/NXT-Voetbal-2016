@@ -1,0 +1,18 @@
+#include "libVerdediger.h"
+
+task main()
+{
+    SetSensorLowspeed(COMPASSSENSORPORT);
+    compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
+    while(true)
+    {
+        GoForward();
+        Wait(2000);
+        GoBackward();
+        Wait(2000);
+        GoLeft();
+        Wait(2000);
+        GoRight();
+        Wait(2000);
+    }
+}
