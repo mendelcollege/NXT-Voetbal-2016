@@ -127,7 +127,6 @@ void DrawSensorValues()
 }
 
 //Motors
-
 /*
  *OUT_A:Fwd=rechts Rev=links
  *OUT_B:Fwd=achteruit Rev=vooruit
@@ -138,81 +137,68 @@ void DrawSensorValues()
  *achteruit: OnFwd(OUT_B, 100); OnFwd(OUT_C, -28);
 */
 
-#define MOTORFORWARD OUT_B
-#define MOTORSIDE OUT_A
+#define MOTOR_Y OUT_B
+#define MOTOR_X OUT_A
 #define COMPENSATOR OUT_C
 
-#define GoLeft() start LeftDriver
-#define GoRight() start RightDriver
-#define GoForward() start ForwardDriver
-#define GoBackward() start BackwardDriver
+char stdcorrectingspeed;
 
-task ForwardDriver();
-task BackwardDriver();
-task LeftDriver();
-task RightDriver();
+void GoLeft()
+{
+    OnFwd(MOTOR_X, -100);
+    Off(MOTOR_Y);
+    stdcorrectingspeed = 58;
+}
 
-task ForwardDriver()
+void GoRight()
+{
+    OnFwd(MOTOR_X, 100);
+    Off(MOTOR_Y);
+    stdcorrectingspeed = -55;
+}
+
+void GoForward()
+{
+    Off(MOTOR_X);
+    OnFwd(MOTOR_Y, -100);
+    stdcorrectingspeed = 28;
+}
+
+void GoBackward()
+{
+    Off(MOTOR_X);
+    OnFwd(MOTOR_Y, 100);
+    stdcorrectingspeed = -28;
+}
+
+void GoNowhere()
+{
+    Off(MOTOR_X);
+    Off(MOTOR_Y);
+    stdcorrectingspeed = 0;
+}
+
+task Corrector()
 {
     char correctingspeed;
-    stop LeftDriver;
-    stop RightDriver;
-    stop BackwardDriver;
-    Off(OUT_A);
-    OnFwd(OUT_B, -100);
-    OnFwd(OUT_C, 28);                                                           //Still needs to be calibrated
     while(true)
     {
-        correctingspeed = 28// - RELCOMPASSVAL;                                 //Dit dan ook nog goed instellen
-        OnFwd(OUT_C, correctingspeed);
+        correctingspeed = stdcorrectingspeed - RELCOMPASSVAL / 2;
+        OnFwd(COMPENSATOR, correctingspeed);
+        Wait(10);
     }
 }
 
-task BackwardDriver()
+//Initialisation
+void Init()
 {
-    char correctingspeed;
-    stop LeftDriver;
-    stop RightDriver;
-    stop ForwardDriver;
-    Off(OUT_A);
-    OnFwd(OUT_B, 100);
-    OnFwd(OUT_C, -28);
-    while(true)
-    {
-        correctingspeed = -28// - RELCOMPASSVAL;
-        OnFwd(OUT_C, correctingspeed);
-    }
+    SetSensorLowspeed(IRSEEKERPORT);
+    SetSensorLowspeed(COMPASSSENSORPORT);
+    SetSensorLowspeed(USSENSORLEFTPORT);
+    SetSensorLowspeed(USSENSORBACKPORT);
+    compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
+    stdcorrectingspeed = 0;
+    start Corrector;
+    y0 = USBACKVAL;
+    x0 = USLEFTVAL;
 }
-
-task LeftDriver()
-{
-    char correctingspeed;
-    stop RightDriver;
-    stop ForwardDriver;
-    stop BackwardDriver;
-    Off(OUT_B);
-    OnFwd(OUT_A, -100);
-    OnFwd(OUT_C, 58);
-    while(true)
-    {
-        correctingspeed = 58// - RELCOMPASSVAL;
-        OnFwd(OUT_C, correctingspeed);
-    }
-}
-
-task RightDriver()
-{
-    char correctingspeed;
-    stop LeftDriver;
-    stop ForwardDriver;
-    stop BackwardDriver;
-    Off(OUT_B);
-    OnFwd(OUT_A, 100);
-    OnFwd(OUT_C, -55);
-    while(true)
-    {
-        correctingspeed = -55// - RELCOMPASSVAL;
-        OnFwd(OUT_C, correctingspeed);
-    }
-}
-

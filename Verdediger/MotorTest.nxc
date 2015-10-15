@@ -2,16 +2,26 @@
 
 task main()
 {
-    SetSensorLowspeed(COMPASSSENSORPORT);
-    compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
+    Init();
     while(true)
     {
+        PlayTone(TONE_A3, 1000);
+        GoNowhere();
+        Wait(5000);
+        
+        PlayTone(TONE_A4, 500);
         GoForward();
         Wait(2000);
+        
+        PlayTone(TONE_A4, 500);
         GoBackward();
         Wait(2000);
+        
+        PlayTone(TONE_A4, 500);
         GoLeft();
         Wait(2000);
+        
+        PlayTone(TONE_A4, 500);
         GoRight();
         Wait(2000);
     }

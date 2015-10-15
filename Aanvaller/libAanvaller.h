@@ -1,13 +1,41 @@
 #include "HTSMUX-driver.h"
 
 //Motors
-#define MOTORFORWARD OUT_B
-#define MOTORSTEER OUT_A
-#define KICKER OUT_C
-#define GoForward(speed) Off(MOTORSTEER); OnFwd(MOTORFORWARD, (-speed))
-#define GoBackward(speed) Off(MOTORSTEER); OnFwd(MOTORFORWARD, speed)
-#define TurnLeft(speed) OnFwd(MOTORSTEER, speed); OnFwd(MOTORFORWARD, 0)
-#define TurnRight(speed) OnFwd(MOTORSTEER, (-speed)); OnFwd(MOTORFORWARD, 0)
+inline void TurnRight()
+{
+    OnFwd(OUT_A, 100);
+    OnFwd(OUT_B, -100);
+}
+
+inline void TurnLeft()
+{
+    OnFwd(OUT_A, -100);
+    OnFwd(OUT_B, 100);
+}
+
+inline void GoForward()
+{
+    OnFwd(OUT_AB, 100);
+}
+
+inline void GoBackward()
+{
+    OnFwd(OUT_AB, -100);
+}
+
+inline void GoNowhere()
+{
+    Float(OUT_AB);
+}
+//Kicker
+#define RECHARGINGTIME 3000
+
+void Kick()
+{
+    OnFwd(OUT_C, 100);
+    Wait(100);
+    Off(OUT_C);
+}
 
 //Port aliases
 #define IRSEEKERPORT S1
@@ -15,7 +43,7 @@
 #define LIGHTSENSORPORT S3
 #define MULTIPLEXORPORT S4
 
-//Sensors aliases
+//Sensor aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, dir, dist)
 #define RAWCOMPASSVAL SensorHTCompass(S2)
 #define COMPASSVAL CompassVal()
@@ -152,12 +180,20 @@ void DrawSensorValues()
 */
 }
 
-//Kicker
-#define RECHARGINGTIME 3000
-
-void Kick()
+//Initialisation
+void Init()
 {
-    OnFwd(KICKER, 100);
-    Wait(100);
-    Off(KICKER);
-} 
+    SetSensorLowspeed(IRSEEKERPORT);
+    SetSensorLowspeed(COMPASSSENSORPORT);
+    SetSensorLight(LIGHTSENSORPORT);
+    SetSensorLowspeed(MULTIPLEXORPORT);
+    if(!HTSMUXscanPorts(MULTIPLEXORPORT))
+    {
+        // Scan failed, handle the error
+        TextOut(0, LCD_LINE7, "Scan failed!");
+        Wait(2000);
+    }
+    compassbeginval = RAWCOMPASSVAL;
+    lastballstate = 1;
+    DrawSensorLabels();
+}
