@@ -111,6 +111,8 @@ void DrawSensorLabels()
     TextOut(0,  LCD_LINE3, "Compass:");
     TextOut(0,  LCD_LINE4, "USL:");
     TextOut(50, LCD_LINE4, "USB:");
+    TextOut(0,  LCD_LINE5, "X:");
+    TextOut(50, LCD_LINE5, "Y:");
 }
 
 void DrawSensorValues()
@@ -118,12 +120,16 @@ void DrawSensorValues()
     NumOut(50,  LCD_LINE1, dir);
     TextOut(50, LCD_LINE2, "    ");
     NumOut(50,  LCD_LINE2, dist);
-    TextOut(50, LCD_LINE3, "   ");
+    TextOut(50, LCD_LINE3, "    ");
     NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
     TextOut(25, LCD_LINE4, "   ");
     NumOut(25,  LCD_LINE4, USLEFTVAL);
     TextOut(75, LCD_LINE4, "   ");
     NumOut(75,  LCD_LINE4, USBACKVAL);
+    TextOut(25, LCD_LINE5, "   ");
+    NumOut(25,  LCD_LINE5, XPOS);
+    TextOut(75, LCD_LINE5, "   ");
+    NumOut(75,  LCD_LINE5, YPOS);
 }
 
 //Motors
@@ -180,11 +186,16 @@ void GoNowhere()
 
 task Corrector()
 {
-    char correctingspeed;
+    int correctingspeed;
     while(true)
     {
-        correctingspeed = stdcorrectingspeed - RELCOMPASSVAL / 2;
+        correctingspeed = stdcorrectingspeed - RELCOMPASSVAL;
+        //TextOut(0, LCD_LINE6, "      ");
+        //NumOut(0, LCD_LINE6, correctingspeed);
+        if(correctingspeed > 100) correctingspeed = 100;
+        if(correctingspeed < -100) correctingspeed = -100;
         OnFwd(COMPENSATOR, correctingspeed);
+        DrawSensorValues();
         Wait(10);
     }
 }
@@ -201,4 +212,5 @@ void Init()
     start Corrector;
     y0 = USBACKVAL;
     x0 = USLEFTVAL;
+    DrawSensorLabels();
 }
