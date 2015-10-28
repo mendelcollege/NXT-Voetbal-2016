@@ -1,0 +1,91 @@
+#include "libVerdediger.h"
+
+void ReturnToBeginPos()
+{
+    if(XPOS > 10) GoLeft();
+    if(XPOS < -10) GoRight();
+    until(abs(XPOS) < 10);
+    GoNowhere();
+    if(YPOS < -10) GoForward();
+    if(YPOS > 10) GoBackward();
+    until(abs(YPOS) < 10);
+    GoNowhere();
+    
+    //WIP
+    GoNowhere();
+    UpdateIRValues();
+    if(dir == 0)
+    {
+        //Kijk of bal achter robot ligt
+        OnFwd(OUT_C, 100);
+        until(abs(RELCOMPASSVAL) > 170);
+        Off(OUT_C);
+        if(dist == 0)
+        {
+            start Corrector;
+            until(abs(RELCOMPASSVAL < 5));
+            if(YPOS < -10) GoForward();
+            if(YPOS > 10) GoBackward();
+            until(abs(YPOS) < 10);
+            GoNowhere();
+        }
+        else if(dist > 3 && dist < 7)
+        {
+            //Bal ontwijken terwijl je terug gaat.
+        }
+        else
+        {
+            start Corrector;
+            until(abs(RELCOMPASSVAL < 5));
+            if(YPOS < -10) GoForward();
+            if(YPOS > 10) GoBackward();
+            until(abs(YPOS) < 10);
+            GoNowhere();
+        }
+    }
+}
+
+void Deflect()
+{
+    GoForward();
+    until(YPOS > 50);
+    ReturnToBeginPos();
+}
+
+task main()
+{
+    Init();
+    while(true)
+    {
+        UpdateIRValues();
+        DrawSensorValues();
+        if(BALLDIRSTRAIGHT)
+        {
+            if(dist > BALLDISTANCETHRESHOLD)
+            {
+                Deflect();
+            }
+            else GoNowhere();
+        }
+        else if(BALLDIRUNKNOWN)
+        {
+            ReturnToBeginPos();
+        }
+        else if(BALLDIRLEFT)
+        {
+            if(XPOS < 75)
+            {
+                GoRight();
+            }
+            else GoNowhere();
+        }
+        else if(BALLDIRRIGHT)
+        {
+            if(XPOS > -75)
+            {
+                GoLeft();
+            }
+            else GoNowhere();
+        }
+    }
+}
