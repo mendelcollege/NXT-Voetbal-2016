@@ -1,6 +1,6 @@
 #include "libAanvaller.h"
 
-void AimAndKick()
+void BoomBoomBatsiBa()
 {
     static long tlastkick;
     Off(OUT_AB);
@@ -8,15 +8,15 @@ void AimAndKick()
     {
         TextOut(0, LCD_LINE7, "Richten...   ");
         if(!BALLPOSSESSION) break;
-        if(RELCOMPASSVAL > 5) TurnLeft(75);
-        if(RELCOMPASSVAL < -5) TurnRight(75);
+        if(RELCOMPASSVAL > 5) TurnLeft();
+        if(RELCOMPASSVAL < -5) TurnRight();
         if(abs(RELCOMPASSVAL) < 5)
         {
             Off(OUT_AB);
             if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
             {
                 TextOut(0, LCD_LINE7, "Kicken...    ");
-                GoForward(100);
+                GoForward();
                 Wait(500);
                 Kick();
                 Wait(500);
@@ -43,26 +43,26 @@ task main()
         if(dist > POSSESSIONTHRESHOLD)
         {
             Off(OUT_AB);
-            //AimAndKick();
+            //BoomBoomBatsiBa();
         }
         else if(BALLDIRLEFT)
         {
-            TurnLeft(100);
+            TurnLeft();
             lastballstate = dir;
         }
         else if(BALLDIRRIGHT)
         {
-            TurnRight(100);
+            TurnRight();
             lastballstate = dir;
         }
         else if(BALLDIRSTRAIGHT)
         {
-            GoForward(100);
+            GoForward();
         }
         else
         {
-            if(lastballstate > 5) TurnLeft(100);
-            if(lastballstate < 5) TurnRight(100);
+            if(lastballstate > 5) TurnLeft();
+            if(lastballstate < 5) TurnRight();
         }        
     }
 }

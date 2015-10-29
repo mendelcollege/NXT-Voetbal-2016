@@ -13,8 +13,8 @@
 #define USBACKVAL SensorUS(USSENSORBACKPORT)
 
 //Position
-#define XPOS (USLEFTVAL - x0)
-#define YPOS (USBACKVAL - y0)
+#define XPOS (int)(USLEFTVAL - x0)
+#define YPOS (int)(USBACKVAL - y0)
 
 unsigned char x0;
 unsigned char y0;
@@ -189,7 +189,7 @@ task Corrector()
     int correctingspeed;
     while(true)
     {
-        correctingspeed = stdcorrectingspeed - RELCOMPASSVAL;
+        correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
         //TextOut(0, LCD_LINE6, "      ");
         //NumOut(0, LCD_LINE6, correctingspeed);
         if(correctingspeed > 100) correctingspeed = 100;
