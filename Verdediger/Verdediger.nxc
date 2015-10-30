@@ -75,24 +75,25 @@ task main()
         }
         else if(BALLDIRUNKNOWN)
         {
+            GoNowhere();
             if(t0 = 0) t0 = CurrentTick();
             if(CurrentTick() - t0 > 2000) ReturnToBeginPos();
         }
         else if(BALLDIRLEFT)
         {
             t0 = 0;
-            if(XPOS < 75)
+            if(XPOS > -75)
             {
-                GoRight();
+                GoLeft();
             }
             else GoNowhere();
         }
         else if(BALLDIRRIGHT)
         {
             t0 = 0;
-            if(XPOS > -75)
+            if(XPOS < 75)
             {
-                GoLeft();
+                GoRight();
             }
             else GoNowhere();
         }

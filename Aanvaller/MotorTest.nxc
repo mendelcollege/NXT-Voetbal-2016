@@ -1,0 +1,15 @@
+#include "libAanvaller.h"
+
+task main()
+{
+    GoForward();
+    Wait(3000); 
+    GoNowhere();
+    Wait(3000);  
+    GoBackward();
+    Wait(3000);
+    TurnLeft();
+    Wait(3000);
+    TurnRight();
+    Wait(3000);
+}

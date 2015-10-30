@@ -13,11 +13,11 @@
 #define USBACKVAL SensorUS(USSENSORBACKPORT)
 
 //Position
-#define XPOS (int)(USLEFTVAL - x0)
-#define YPOS (int)(USBACKVAL - y0)
+#define XPOS (USLEFTVAL - x0)
+#define YPOS (USBACKVAL - y0)
 
-unsigned char x0;
-unsigned char y0;
+int x0;
+int y0;
 
 //IRBall
 #define BALLDIRLEFT (dir > 5)
@@ -121,7 +121,7 @@ void DrawSensorValues()
     TextOut(50, LCD_LINE2, "    ");
     NumOut(50,  LCD_LINE2, dist);
     TextOut(50, LCD_LINE3, "    ");
-    NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
+    //NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
     TextOut(25, LCD_LINE4, "   ");
     NumOut(25,  LCD_LINE4, USLEFTVAL);
     TextOut(75, LCD_LINE4, "   ");
