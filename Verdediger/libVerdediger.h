@@ -12,12 +12,19 @@
 #define USLEFTVAL SensorUS(USSENSORLEFTPORT)
 #define USBACKVAL SensorUS(USSENSORBACKPORT)
 
-//Position
-#define XPOS (USLEFTVAL - x0)
-#define YPOS (USBACKVAL - y0)
-
 int x0;
 int y0;
+
+//Position
+inline int XPos()
+{   
+    return USLEFTVAL - x0;
+}
+
+inline int YPos()
+{
+    return USBACKVAL - y0;
+}
 
 //IRBall
 #define BALLDIRLEFT (dir > 5)
@@ -28,7 +35,6 @@ int y0;
 
 int dir;
 int dist;
-char lastballstate;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist)
 {
@@ -72,9 +78,9 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist
 }
 
 //Compass
-short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
+int compassbeginval;                                                            //compassbeginval =  COMPASSVAL;
 
-short CompassVal()
+int CompassVal()
 {
     if(RAWCOMPASSVAL < 0)
     {
@@ -86,7 +92,7 @@ short CompassVal()
     }
 }
 
-short RelCompassVal()
+int RelCompassVal()
 {
     short tmp = RAWCOMPASSVAL - compassbeginval;
     if(tmp <= 180 && tmp >= -179)
@@ -121,15 +127,15 @@ void DrawSensorValues()
     TextOut(50, LCD_LINE2, "    ");
     NumOut(50,  LCD_LINE2, dist);
     TextOut(50, LCD_LINE3, "    ");
-    //NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
+    NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
     TextOut(25, LCD_LINE4, "   ");
     NumOut(25,  LCD_LINE4, USLEFTVAL);
     TextOut(75, LCD_LINE4, "   ");
     NumOut(75,  LCD_LINE4, USBACKVAL);
     TextOut(25, LCD_LINE5, "   ");
-    NumOut(25,  LCD_LINE5, XPOS);
+    NumOut(25,  LCD_LINE5, XPos());
     TextOut(75, LCD_LINE5, "   ");
-    NumOut(75,  LCD_LINE5, YPOS);
+    NumOut(75,  LCD_LINE5, YPos());
 }
 
 //Motors
@@ -190,12 +196,9 @@ task Corrector()
     while(true)
     {
         correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
-        //TextOut(0, LCD_LINE6, "      ");
-        //NumOut(0, LCD_LINE6, correctingspeed);
         if(correctingspeed > 100) correctingspeed = 100;
         if(correctingspeed < -100) correctingspeed = -100;
         OnFwd(COMPENSATOR, correctingspeed);
-        DrawSensorValues();
         Wait(10);
     }
 }

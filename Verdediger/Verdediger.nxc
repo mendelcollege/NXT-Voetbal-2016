@@ -2,14 +2,15 @@
 
 void ReturnToBeginPos()
 {
-    if(XPOS > 10) GoLeft();
-    if(XPOS < -10) GoRight();
-    until(abs(XPOS) < 10);
+    TextOut(0, LCD_LINE6, "Returning... )");
+    if(XPos() > 10) GoLeft();
+    if(XPos() < -10) GoRight();
+    until(abs(XPos()) < 10);
     GoNowhere();
     
-    if(YPOS < -10) GoForward();
-    if(YPOS > 10) GoBackward();
-    until(abs(YPOS) < 10);
+    if(YPos() < -10) GoForward();
+    if(YPos() > 10) GoBackward();
+    until(abs(YPos()) < 10);
     GoNowhere();
     
     //WIP
@@ -26,9 +27,9 @@ void ReturnToBeginPos()
         {
             start Corrector;
             until(abs(RELCOMPASSVAL < 5));
-            if(YPOS < -10) GoForward();
-            if(YPOS > 10) GoBackward();
-            until(abs(YPOS) < 10);
+            if(YPos() < -10) GoForward();
+            if(YPos() > 10) GoBackward();
+            until(abs(YPos()) < 10);
             GoNowhere();
         }
         else
@@ -41,9 +42,9 @@ void ReturnToBeginPos()
     }
     else
     {
-        if(YPOS < -10) GoForward();
-        if(YPOS > 10) GoBackward();
-        until(abs(YPOS) < 10);
+        if(YPos() < -10) GoForward();
+        if(YPos() > 10) GoBackward();
+        until(abs(YPos()) < 10);
         GoNowhere();
     }
 */
@@ -51,8 +52,9 @@ void ReturnToBeginPos()
 
 void Deflect()
 {
+    TextOut(0, LCD_LINE6, "Deflecting...)");
     GoForward();
-    until(YPOS > 50);
+    until(YPos() > 50);
     ReturnToBeginPos();
 }
 
@@ -62,6 +64,7 @@ task main()
     long t0;
     while(true)
     {
+        TextOut(0, LCD_LINE6, "Searching...  )");
         UpdateIRValues();
         DrawSensorValues();
         if(BALLDIRSTRAIGHT)
@@ -82,7 +85,7 @@ task main()
         else if(BALLDIRLEFT)
         {
             t0 = 0;
-            if(XPOS > -75)
+            if(XPos() > -75)
             {
                 GoLeft();
             }
@@ -91,7 +94,7 @@ task main()
         else if(BALLDIRRIGHT)
         {
             t0 = 0;
-            if(XPOS < 75)
+            if(XPos() < 75)
             {
                 GoRight();
             }
