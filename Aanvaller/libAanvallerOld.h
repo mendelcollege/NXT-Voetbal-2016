@@ -1,44 +1,47 @@
-#include "NXTMMX-lib.h"
+#include "HTSMUX-driver.h"
 
-//Motorstuffs (to-do)
-#define MOTORLEFT OUT_A
-#define MOTORBACK OUT_B
-#define MOTRORRIGHT OUT_C
-
+//Motors
 inline void TurnRight()
 {
+    OnFwd(OUT_A, 100);
+    OnFwd(OUT_B, -100);
 }
 
 inline void TurnLeft()
 {
+    OnFwd(OUT_A, -100);
+    OnFwd(OUT_B, 100);
 }
 
 inline void GoForward()
 {
+    OnFwd(OUT_AB, 100);
 }
 
 inline void GoBackward()
 {
+    OnFwd(OUT_AB, -100);
 }
 
 inline void GoNowhere()
 {
+    Float(OUT_AB);
 }
-
 //Kicker
 #define RECHARGINGTIME 3000
 
 void Kick()
 {
-
+    OnFwd(OUT_C, 100);
+    Wait(100);
+    Off(OUT_C);
 }
 
 //Port aliases
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
 #define LIGHTSENSORPORT S3
-#define USSENSORPORT S4
-#define MMXPORT S4
+#define MULTIPLEXORPORT S4
 
 //Sensor aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, dir, dist)
@@ -46,7 +49,16 @@ void Kick()
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
 #define LIGHTVAL SENSOR_3
-#define USVAL SensorUS(S4)
+#define USVAL1 smuxSensorLegoUS(msensor_S4_1)
+#define USVAL2 smuxSensorLegoUS(msensor_S4_2)
+#define USVAL3 smuxSensorLegoUS(msensor_S4_3)
+#define USVAL4 smuxSensorLegoUS(msensor_S4_4)
+
+//Sensor placement
+#define ANGLESENSORUS1 0
+#define ANGLESENSORUS2 90
+#define ANGLESENSORUS3 180
+#define ANGLESENSORUS4 270
 
 //IRBall
 #define BALLDIRLEFT (dir > 5)
@@ -133,9 +145,6 @@ short RelCompassVal()
     }
 }
 
-//Ultrasone / Positioning
-
-
 //Display
 void DrawSensorLabels()
 {
@@ -143,7 +152,10 @@ void DrawSensorLabels()
     TextOut(0,  LCD_LINE2, "IRdist:");
     TextOut(0,  LCD_LINE3, "Compass:");
     TextOut(0,  LCD_LINE4, "Light:");
-    TextOut(0,  LCD_LINE5, "US:");
+    TextOut(0,  LCD_LINE5, "US1:");
+    TextOut(50, LCD_LINE5, "US2:");
+    TextOut(0,  LCD_LINE6, "US3:");
+    TextOut(50, LCD_LINE6, "US4:");
 }
 
 void DrawSensorValues()
@@ -155,8 +167,16 @@ void DrawSensorValues()
     NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
     TextOut(50, LCD_LINE4, "   ");
     NumOut(50,  LCD_LINE4, LIGHTVAL);
-    TextOut(50, LCD_LINE5, "   ");
-    NumOut(50,  LCD_LINE5, USVAL);
+/*
+    TextOut(25, LCD_LINE5, "   ");
+    NumOut(25,  LCD_LINE5, USVAL1);
+    TextOut(75, LCD_LINE5, "   ");
+    NumOut(75,  LCD_LINE5, USVAL2);
+    TextOut(25, LCD_LINE6, "   ");
+    NumOut(25,  LCD_LINE6, USVAL3);
+    TextOut(75, LCD_LINE6, "   ");
+    NumOut(75,  LCD_LINE6, USVAL4);
+*/
 }
 
 //Initialisation
@@ -165,7 +185,13 @@ void Init()
     SetSensorLowspeed(IRSEEKERPORT);
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorLight(LIGHTSENSORPORT);
-    SetSensorLowspeed(MMXPORT);
+    SetSensorLowspeed(MULTIPLEXORPORT);
+    if(!HTSMUXscanPorts(MULTIPLEXORPORT))
+    {
+        // Scan failed, handle the error
+        TextOut(0, LCD_LINE7, "Scan failed!");
+        Wait(2000);
+    }
     compassbeginval = RAWCOMPASSVAL;
     lastballstate = 1;
     DrawSensorLabels();
