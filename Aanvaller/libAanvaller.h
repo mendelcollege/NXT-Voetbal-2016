@@ -5,26 +5,21 @@
 #define MOTORBACK OUT_B
 #define MOTRORRIGHT OUT_C
 
-inline void TurnRight()
-{
-}
+#define TurnRight(speed)    OnFwd(MOTORLEFT, speed);\
+                            OnFwd(MOTORRIGHT, (-speed));\
+                            OnFwd(MOTORBACK, (-speed))
+                            
+#define TurnLeft(speed)     OnFwd(MOTORLEFT, (-speed));\
+                            OnFwd(MOTORRIGHT, speed);\
+                            OnFwd(MOTORBACK, speed)
 
-inline void TurnLeft()
-{
-}
-
-inline void GoForward()
-{
-}
-
-inline void GoBackward()
-{
-}
-
-inline void GoNowhere()
-{
-}
-
+#define GoForward(speed)    OnFwd(MOTORLEFT, speed);\
+                            OnFwd(MOTORRIGHT, speed);\
+                            Off(MOTORBACK)
+                            
+#define GoForward(speed)    OnFwd(MOTORLEFT, (-speed));\
+                            OnFwd(MOTORRIGHT, (-speed));\
+                            Off(MOTORBACK)
 //Kicker
 #define RECHARGINGTIME 3000
 
@@ -53,7 +48,7 @@ void Kick()
 #define BALLDIRRIGHT (dir < 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define POSSESSIONTHRESHOLD 340
+#define POSSESSIONTHRESHOLD 180
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 
 int dir;
@@ -104,7 +99,7 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist
 //Compass
 short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
 
-short CompassVal()
+safecall short CompassVal()
 {
     if(RAWCOMPASSVAL < 0)
     {
@@ -116,7 +111,7 @@ short CompassVal()
     }
 }
 
-short RelCompassVal()
+safecall short RelCompassVal()
 {
     short tmp = RAWCOMPASSVAL - compassbeginval;
     if(tmp <= 180 && tmp >= -179)
@@ -134,7 +129,38 @@ short RelCompassVal()
 }
 
 //Ultrasone / Positioning
+long usdir;
 
+#define FORWARD 0
+#define BACK 180
+#define RIGHT 90
+#define LEFT 270
+
+byte GetDist(long direction)
+{
+    usdir = direction;
+    MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+    return USVAL;
+}
+
+task USCorrector()
+{
+    long tachopos;
+    while(true)
+    {
+        tachopos  = usdir - RELCOMPASSVAL;
+        MMX_Run_Tachometer( MMXPORT,
+                            0x06,
+                            MMX_Motor_1,
+                            MMX_Direction_Forward,
+                            100,
+                            tachopos,
+                            false,  //Relative
+                            true,   //Wait for completion.
+                            MMX_Next_Action_BrakeHold);
+        Wait(10);
+    }
+}
 
 //Display
 void DrawSensorLabels()
@@ -166,7 +192,10 @@ void Init()
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorLight(LIGHTSENSORPORT);
     SetSensorLowspeed(MMXPORT);
+    MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
     lastballstate = 1;
+    usdir = 0;
     DrawSensorLabels();
+    start USCorrector;
 }
