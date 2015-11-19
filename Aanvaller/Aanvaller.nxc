@@ -1,27 +1,27 @@
 #include "libAanvaller.h"
 
-void BoomBoomBatsiBa()
+void BoemBoemBatsiBa()
 {
     static long tlastkick;
-    Off(OUT_AB);
+    Off(MOTORALL);
     while(true)
     {
         TextOut(0, LCD_LINE7, "Richten...   ");
         if(!BALLPOSSESSION) break;
-        if(RELCOMPASSVAL > 5) TurnLeft();
-        if(RELCOMPASSVAL < -5) TurnRight();
+        if(RELCOMPASSVAL > 5) TurnLeft(75);
+        if(RELCOMPASSVAL < -5) TurnRight(75);
         if(abs(RELCOMPASSVAL) < 5)
         {
-            Off(OUT_AB);
+            Off(MOTORALL);
             if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
             {
                 TextOut(0, LCD_LINE7, "Kicken...    ");
-                GoForward();
+                GoForward(100);
                 Wait(500);
                 Kick();
-                Wait(500);
-                Off(OUT_B);
                 tlastkick = CurrentTick();
+                Wait(500);
+                Off(MOTORALL);
                 break;
             }
             else
@@ -32,9 +32,15 @@ void BoomBoomBatsiBa()
     }
 }
 
+void GettingAwayFromItAll()
+{
+    
+}
+
 task main()
 {
     Init();
+    /*
     while(true)
     {
         UpdateIRValues();
@@ -42,27 +48,86 @@ task main()
         TextOut(0, LCD_LINE7, "Zoeken...    ");
         if(dist > POSSESSIONTHRESHOLD)
         {
-            Off(OUT_AB);
-            //BoomBoomBatsiBa();
+            Off(MOTORALL);
+            //BoemBoemBatsiBa();
         }
         else if(BALLDIRLEFT)
         {
-            TurnLeft();
+            TurnLeft(100);
             lastballstate = dir;
         }
         else if(BALLDIRRIGHT)
         {
-            TurnRight();
+            TurnRight(100);
             lastballstate = dir;
         }
         else if(BALLDIRSTRAIGHT)
         {
-            GoForward();
+            GoForward(100);
         }
         else
         {
-            if(lastballstate > 5) TurnLeft();
-            if(lastballstate < 5) TurnRight();
+            if(lastballstate > 5) TurnLeft(100);
+            if(lastballstate < 5) TurnRight(100);
         }        
+    }
+    */
+    while(true)
+    {
+        UpdateIRValues();
+        DrawSensorValues();
+        if(dir == 0) dir = lastballstate;
+        TextOut(0, LCD_LINE7, "Zoeken...    ");
+        
+        if(LIGHTVAL > WHITE)
+        {
+            //GettingAwayFromItAll(); (from the line)
+        }
+        
+        if(dir == 5)
+        {
+            if(dist < POSSESSIONTHRESHOLD)
+            {
+                Float(MOTORALL);
+                BoemBoemBatsiBa();
+            }
+            else
+            {
+                if(dist > BALLCLOSE) GoForward(50);
+                if(dist <= BALLCLOSE) GoForward(100);
+            }
+        }
+        else if(dir < 5)
+        {
+            if(dir < 3)
+            {
+                TurnRight(100);
+            }
+            else
+            {
+                if(dist > BALLCLOSE)
+                {
+                    OnFwd(MOTORRIGHT, -100);
+                    OnFwd(MOTORBACK, 100);
+                }
+                else TurnRight(50);
+            }
+        }
+        else if(dir > 5)
+        {
+            if(dir > 7)
+            {
+                TurnLeft(100);
+            }
+            else
+            {
+                if(dist > BALLCLOSE)
+                {
+                    OnFwd(MOTORLEFT, -100);
+                    OnFwd(MOTORBACK, -100);
+                }
+                else TurnRight(50);
+            }
+        }
     }
 }

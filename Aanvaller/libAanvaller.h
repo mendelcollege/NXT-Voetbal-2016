@@ -3,7 +3,8 @@
 //Motorstuffs (to-do)
 #define MOTORLEFT OUT_A
 #define MOTORBACK OUT_B
-#define MOTRORRIGHT OUT_C
+#define MOTORRIGHT OUT_C
+#define MOTORALL OUT_ABC
 
 #define TurnRight(speed)    OnFwd(MOTORLEFT, speed);\
                             OnFwd(MOTORRIGHT, (-speed));\
@@ -17,16 +18,9 @@
                             OnFwd(MOTORRIGHT, speed);\
                             Off(MOTORBACK)
                             
-#define GoForward(speed)    OnFwd(MOTORLEFT, (-speed));\
+#define GoBackward(speed)    OnFwd(MOTORLEFT, (-speed));\
                             OnFwd(MOTORRIGHT, (-speed));\
                             Off(MOTORBACK)
-//Kicker
-#define RECHARGINGTIME 3000
-
-void Kick()
-{
-
-}
 
 //Port aliases
 #define IRSEEKERPORT S1
@@ -35,12 +29,24 @@ void Kick()
 #define USSENSORPORT S4
 #define MMXPORT S4
 
+//Kicker
+#define RECHARGINGTIME 3000
+
+void Kick()
+{
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_2, MMX_Direction_Forward, 75);
+    Wait(500);
+    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Float);
+}
+
 //Sensor aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, dir, dist)
 #define RAWCOMPASSVAL SensorHTCompass(S2)
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
 #define LIGHTVAL SENSOR_3
+#define WHITE 55 //?
+#define BLACK 40 //?
 #define USVAL SensorUS(S4)
 
 //IRBall
@@ -49,6 +55,7 @@ void Kick()
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
 #define POSSESSIONTHRESHOLD 180
+#define BALLCLOSE 140
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 
 int dir;
@@ -139,6 +146,7 @@ long usdir;
 byte GetDist(long direction)
 {
     usdir = direction;
+    Wait(100);
     MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
     return USVAL;
 }
@@ -149,16 +157,16 @@ task USCorrector()
     while(true)
     {
         tachopos  = usdir - RELCOMPASSVAL;
-        MMX_Run_Tachometer( MMXPORT,
-                            0x06,
-                            MMX_Motor_1,
-                            MMX_Direction_Forward,
-                            100,
-                            tachopos,
-                            false,  //Relative
-                            true,   //Wait for completion.
-                            MMX_Next_Action_BrakeHold);
-        Wait(10);
+        MMX_Run_Tachometer(MMXPORT,
+                           0x06,
+                           MMX_Motor_1,
+                           MMX_Direction_Forward,
+                           100,
+                           tachopos,
+                           false,  //Relative
+                           true,   //Wait for completion.
+                           MMX_Next_Action_BrakeHold);
+        Wait(100);
     }
 }
 
