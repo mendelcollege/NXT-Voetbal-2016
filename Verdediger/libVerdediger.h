@@ -31,7 +31,7 @@ inline int YPos()
 #define BALLDIRRIGHT (dir < 5)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define BALLDISTANCETHRESHOLD 300
+#define BALLDISTANCETHRESHOLD 100
 
 int dir;
 int dist;
@@ -188,6 +188,29 @@ void GoNowhere()
     Off(MOTOR_X);
     Off(MOTOR_Y);
     stdcorrectingspeed = 0;
+}
+
+void Go(char speedx, char speedy)
+{
+    int correctingspeedx, correctingspeedy;
+    speedy = -speedy;
+    if(speedx >  100)   speedx           =  100;
+    if(speedx < -100)   speedx           = -100;
+    if(speedy >  100)   speedy           =  100;
+    if(speedy < -100)   speedy           = -100;
+    if(speedx >  0)     correctingspeedx = -55;
+    if(speedx <  0)     correctingspeedx =  58;
+    if(speedx == 0)     correctingspeedx =  0;
+    if(speedy >  0)     correctingspeedy = -28;
+    if(speedy <  0)     correctingspeedy =  28;
+    if(speedy == 0)     correctingspeedy =  0;
+    
+    correctingspeedx = correctingspeedx * speedx / 100;
+    correctingspeedy = correctingspeedy * speedy / 100;
+    
+    OnFwd(MOTOR_X, speedx);
+    OnFwd(MOTOR_Y, speedy);
+    stdcorrectingspeed = correctingspeedx + correctingspeedy;
 }
 
 task Corrector()
