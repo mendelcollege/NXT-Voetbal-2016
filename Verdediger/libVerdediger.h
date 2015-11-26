@@ -159,28 +159,28 @@ void GoLeft()
 {
     OnFwd(MOTOR_X, -100);
     Off(MOTOR_Y);
-    stdcorrectingspeed = 58;
+    stdcorrectingspeed = 62;
 }
 
 void GoRight()
 {
     OnFwd(MOTOR_X, 100);
     Off(MOTOR_Y);
-    stdcorrectingspeed = -55;
+    stdcorrectingspeed = -60;
 }
 
 void GoForward()
 {
     Off(MOTOR_X);
     OnFwd(MOTOR_Y, -100);
-    stdcorrectingspeed = 28;
+    stdcorrectingspeed = 40;
 }
 
 void GoBackward()
 {
     Off(MOTOR_X);
     OnFwd(MOTOR_Y, 100);
-    stdcorrectingspeed = -28;
+    stdcorrectingspeed = -40;
 }
 
 void GoNowhere()
@@ -198,8 +198,8 @@ void Go(char speedx, char speedy)
     if(speedx < -100)   speedx           = -100;
     if(speedy >  100)   speedy           =  100;
     if(speedy < -100)   speedy           = -100;
-    if(speedx >  0)     correctingspeedx = -55;
-    if(speedx <  0)     correctingspeedx =  58;
+    if(speedx >  0)     correctingspeedx = -60;
+    if(speedx <  0)     correctingspeedx =  62;
     if(speedx == 0)     correctingspeedx =  0;
     if(speedy >  0)     correctingspeedy = -28;
     if(speedy <  0)     correctingspeedy =  28;
