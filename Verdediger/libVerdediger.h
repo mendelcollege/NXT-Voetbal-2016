@@ -31,7 +31,7 @@ inline int YPos()
 #define BALLDIRRIGHT (dir < 5)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define BALLDISTANCETHRESHOLD 100
+#define BALLDISTANCETHRESHOLD 200
 
 int dir;
 int dist;
@@ -213,6 +213,8 @@ void Go(char speedx, char speedy)
     stdcorrectingspeed = correctingspeedx + correctingspeedy;
 }
 
+bool correctorenabled;
+
 task Corrector()
 {
     int correctingspeed;
@@ -221,7 +223,7 @@ task Corrector()
         correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
         if(correctingspeed > 100) correctingspeed = 100;
         if(correctingspeed < -100) correctingspeed = -100;
-        OnFwd(COMPENSATOR, correctingspeed);
+        if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
         Wait(10);
     }
 }
@@ -235,6 +237,7 @@ void Init()
     SetSensorLowspeed(USSENSORBACKPORT);
     compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
     stdcorrectingspeed = 0;
+    correctorenabled = true;
     start Corrector;
     y0 = USBACKVAL;
     x0 = USLEFTVAL;

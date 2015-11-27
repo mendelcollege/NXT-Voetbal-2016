@@ -3,14 +3,26 @@
 void ReturnToBeginPos()
 {
     TextOut(0, LCD_LINE6, "Returning... )");
+    /*
     if(XPos() > 10) GoLeft();
     if(XPos() < -10) GoRight();
-    until(abs(XPos()) < 10);
+    while(abs(XPos()) > 10)
+    {
+        UpdateIRValues();
+        if(dir != 0) return;
+        Wait(10);
+    }
+    */
     GoNowhere();
     
     if(YPos() < -10) GoForward();
     if(YPos() > 10) GoBackward();
-    until(abs(YPos()) < 10);
+    while(abs(YPos()) > 10)
+    {
+        UpdateIRValues();
+        if(dir != 0) return;
+        Wait(10);
+    }
     GoNowhere();
     
     //WIP
@@ -54,14 +66,16 @@ void Deflect()
 {
     TextOut(0, LCD_LINE6, "Deflecting...)");
     GoForward();
-    until(YPos() > 50);
-    ReturnToBeginPos();
+    Wait(500);
+    GoBackward();
+    Wait(500);
 }
 
 task main()
 {
     Init();
-    long t0;
+    long t0ballunknown;
+    long t0ballstraight;
     while(true)
     {
         TextOut(0, LCD_LINE6, "Searching...  )");
@@ -69,36 +83,56 @@ task main()
         DrawSensorValues();
         if(BALLDIRSTRAIGHT)
         {
-            t0 = 0;
+            t0ballunknown = 0;
+            if(t0ballstraight == 0){ t0ballstraight = CurrentTick();}
             if(dist > BALLDISTANCETHRESHOLD)
             {
-                Deflect();
+
+                if(CurrentTick() - t0ballstraight > 2000) if(correctorenabled) Deflect();
             }
             else GoNowhere();
         }
         else if(BALLDIRUNKNOWN)
         {
             GoNowhere();
-            if(t0 = 0) t0 = CurrentTick();
-            if(CurrentTick() - t0 > 2000) ReturnToBeginPos();
+            t0ballstraight = 0;
+            if(t0ballunknown == 0){ t0ballunknown = CurrentTick();}
+            if(CurrentTick() - t0ballunknown > 2000)
+            {
+                correctorenabled = true;
+                until(abs(RELCOMPASSVAL < 5));
+                ReturnToBeginPos();
+            }
         }
         else if(BALLDIRLEFT)
         {
-            t0 = 0;
+            t0ballunknown = 0;
+            t0ballstraight = 0;
             if(XPos() > -75)
             {
+                correctorenabled = true;
                 GoLeft();
             }
-            else GoNowhere();
+            else
+            {
+                correctorenabled = false;
+                OnFwd(OUT_C, -50);
+            }
         }
         else if(BALLDIRRIGHT)
         {
-            t0 = 0;
+            t0ballunknown = 0;
+            t0ballstraight = 0;
             if(XPos() < 75)
             {
+                correctorenabled = true;
                 GoRight();
             }
-            else GoNowhere();
+            else
+            {
+                correctorenabled = false;
+                OnFwd(OUT_C, 50);
+            }
         }
     }
 }
