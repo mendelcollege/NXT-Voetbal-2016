@@ -3,7 +3,6 @@
 void ReturnToBeginPos()
 {
     TextOut(0, LCD_LINE6, "Returning... )");
-    /*
     if(XPos() > 10) GoLeft();
     if(XPos() < -10) GoRight();
     while(abs(XPos()) > 10)
@@ -12,7 +11,6 @@ void ReturnToBeginPos()
         if(dir != 0) return;
         Wait(10);
     }
-    */
     GoNowhere();
     
     if(YPos() < -10) GoForward();
@@ -74,64 +72,155 @@ void Deflect()
 task main()
 {
     Init();
-    long t0ballunknown;
-    long t0ballstraight;
+    long t0ballunknown = 0;
+    long t0ballstraight = 0;
+    byte state = 0;
     while(true)
     {
-        TextOut(0, LCD_LINE6, "Searching...  )");
-        UpdateIRValues();
-        DrawSensorValues();
-        if(BALLDIRSTRAIGHT)
+        if(state == STATENORMAL)
         {
-            t0ballunknown = 0;
-            if(t0ballstraight == 0){ t0ballstraight = CurrentTick();}
-            if(dist > BALLDISTANCETHRESHOLD)
+            TextOut(0, LCD_LINE6, "Searching_0...");
+            UpdateIRValues();
+            DrawSensorValues();
+            if(USBACKVAL < 10)
             {
-
-                if(CurrentTick() - t0ballstraight > 2000) if(correctorenabled) Deflect();
+                GoForward();
             }
-            else GoNowhere();
+            else if(BALLDIRSTRAIGHT)
+            {
+                t0ballunknown = 0;
+                if(t0ballstraight == 0) t0ballstraight = CurrentTick();
+                if(CurrentTick() - t0ballstraight > 2000)
+                {
+                    if(dist > BALLDISTANCETHRESHOLD) if(correctorenabled) Deflect();
+                }
+                else GoNowhere();
+            }
+            else if(BALLDIRUNKNOWN)
+            {
+                GoNowhere();
+                t0ballstraight = 0;
+                if(t0ballunknown == 0) t0ballunknown = CurrentTick();
+                if(CurrentTick() - t0ballunknown > 2000)
+                {
+                    until(abs(RELCOMPASSVAL < 5));
+                    ReturnToBeginPos();
+                }
+            }
+            else if(BALLDIRLEFT)
+            {
+                t0ballunknown = 0;
+                t0ballstraight = 0;
+                if(XPos() > -75)
+                {
+                    GoLeft();
+                }
+                else
+                {
+                    GoNowhere();
+                    correctorenabled = false;
+                    state = 1;
+                }
+            }
+            else if(BALLDIRRIGHT)
+            {
+                t0ballunknown = 0;
+                t0ballstraight = 0;
+                if(XPos() < 75)
+                {
+                    GoRight();
+                }
+                else
+                {
+                    GoNowhere();
+                    correctorenabled = false;
+                    state = 2;
+                }
+            }
         }
-        else if(BALLDIRUNKNOWN)
+        if(state == STATELEFT)
         {
-            GoNowhere();
-            t0ballstraight = 0;
-            if(t0ballunknown == 0){ t0ballunknown = CurrentTick();}
-            if(CurrentTick() - t0ballunknown > 2000)
+            TextOut(0, LCD_LINE6, "Searching_1...");
+            UpdateIRValues();
+            DrawSensorValues();
+            if(BALLDIRSTRAIGHT)
             {
-                correctorenabled = true;
-                until(abs(RELCOMPASSVAL < 5));
-                ReturnToBeginPos();
+                t0ballunknown = 0;
+            }
+            else if(BALLDIRUNKNOWN)
+            {
+                GoNowhere();
+                t0ballstraight = 0;
+                if(t0ballunknown == 0) t0ballunknown = CurrentTick();
+                if(CurrentTick() - t0ballunknown > 2000)
+                {
+                    correctorenabled = true;
+                    until(abs(RELCOMPASSVAL < 5));
+                    ReturnToBeginPos();
+                }
+            }
+            else if(BALLDIRLEFT)
+            {
+                t0ballunknown = 0;
+                t0ballstraight = 0;
+                if(RELCOMPASSVAL > -90)
+                {
+                    OnFwd(OUT_C, -100);
+                }
+                else Off(OUT_C);
+            }
+            else if(BALLDIRRIGHT)
+            {
+                t0ballunknown = 0;
+                t0ballstraight = 0;
+                if(abs(RELCOMPASSVAL < 5))
+                {
+                    Off(OUT_C);
+                    correctorenabled = true;
+                    state = 0;
+                }
+                OnFwd(OUT_C, 100);
             }
         }
-        else if(BALLDIRLEFT)
+        if(state = STATERIGHT)
         {
-            t0ballunknown = 0;
-            t0ballstraight = 0;
-            if(XPos() > -75)
+            if(BALLDIRSTRAIGHT)
             {
-                correctorenabled = true;
-                GoLeft();
+                t0ballunknown = 0;
             }
-            else
+            else if(BALLDIRUNKNOWN)
             {
-                correctorenabled = false;
-                OnFwd(OUT_C, -50);
+                GoNowhere();
+                t0ballstraight = 0;
+                if(t0ballunknown == 0) t0ballunknown = CurrentTick();
+                if(CurrentTick() - t0ballunknown > 2000)
+                {
+                    correctorenabled = true;
+                    until(abs(RELCOMPASSVAL < 5));
+                    ReturnToBeginPos();
+                }
             }
-        }
-        else if(BALLDIRRIGHT)
-        {
-            t0ballunknown = 0;
-            t0ballstraight = 0;
-            if(XPos() < 75)
+            else if(BALLDIRRIGHT)
             {
-                correctorenabled = true;
-                GoRight();
+                t0ballunknown = 0;
+                t0ballstraight = 0;
+                if(RELCOMPASSVAL > 90)
+                {
+                    OnFwd(OUT_C, 100);
+                }
+                else Off(OUT_C);
             }
-            else
+            else if(BALLDIRLEFT)
             {
-                correctorenabled = false;
-                OnFwd(OUT_C, 50);
+                t0ballunknown = 0;
+                t0ballstraight = 0;
+                if(abs(RELCOMPASSVAL < 5))
+                {
+                    Off(OUT_C);
+                    correctorenabled = true;
+                    state = 0;
+                }
+                OnFwd(OUT_C, -100);
             }
         }
     }

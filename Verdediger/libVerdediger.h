@@ -228,6 +228,11 @@ task Corrector()
     }
 }
 
+//States
+#define STATENORMAL 0
+#define STATELEFT 1
+#define STATERIGHT 2
+
 //Initialisation
 void Init()
 {
