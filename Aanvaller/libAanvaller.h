@@ -6,21 +6,23 @@
 #define MOTORRIGHT OUT_C
 #define MOTORALL OUT_ABC
 
-#define TurnRight(speed)    OnFwd(MOTORLEFT, speed);\
+#define TurnRight(speed)    OnFwd(MOTORLEFT, (-speed));\
                             OnFwd(MOTORRIGHT, (-speed));\
                             OnFwd(MOTORBACK, (-speed))
                             
-#define TurnLeft(speed)     OnFwd(MOTORLEFT, (-speed));\
+#define TurnLeft(speed)     OnFwd(MOTORLEFT, speed);\
                             OnFwd(MOTORRIGHT, speed);\
                             OnFwd(MOTORBACK, speed)
 
-#define GoForward(speed)    OnFwd(MOTORLEFT, speed);\
+#define GoForward(speed)    OnFwd(MOTORLEFT, (-speed));\
                             OnFwd(MOTORRIGHT, speed);\
                             Off(MOTORBACK)
                             
-#define GoBackward(speed)    OnFwd(MOTORLEFT, (-speed));\
+#define GoBackward(speed)   OnFwd(MOTORLEFT, speed);\
                             OnFwd(MOTORRIGHT, (-speed));\
                             Off(MOTORBACK)
+                            
+#define GoNowhere() Off(MOTORALL)
 
 //Port aliases
 #define IRSEEKERPORT S1
