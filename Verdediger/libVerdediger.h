@@ -149,44 +149,57 @@ void DrawSensorValues()
  *achteruit: OnFwd(OUT_B, 100); OnFwd(OUT_C, -28);
 */
 
+char stdcorrectingspeed;
+
 #define MOTOR_Y OUT_B
 #define MOTOR_X OUT_A
 #define COMPENSATOR OUT_C
 
-char stdcorrectingspeed;
+#define CORSPEEDLEFT 62
+#define CORSPEEDRIGHT -60
+#define CORSPEEDFORWARD 40
+#define CORSPEEDBACKWARD -40
+
+#define TurnRight(speed) OnFwd(COMPENSATOR, speed)
+#define TurnLeft(speed) OnFwd(COMPENSATOR, (-speed))
 
 void GoLeft()
 {
     OnFwd(MOTOR_X, -100);
     Off(MOTOR_Y);
-    stdcorrectingspeed = 62;
+    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDLEFT);
+    stdcorrectingspeed = CORSPEEDLEFT;
 }
 
 void GoRight()
 {
     OnFwd(MOTOR_X, 100);
     Off(MOTOR_Y);
-    stdcorrectingspeed = -60;
+    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDRIGHT);
+    stdcorrectingspeed = CORSPEEDRIGHT;
 }
 
 void GoForward()
 {
     Off(MOTOR_X);
     OnFwd(MOTOR_Y, -100);
-    stdcorrectingspeed = 40;
+    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDFORWARD);
+    stdcorrectingspeed = CORSPEEDFORWARD;
 }
 
 void GoBackward()
 {
     Off(MOTOR_X);
     OnFwd(MOTOR_Y, 100);
-    stdcorrectingspeed = -40;
+    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDBACKWARD);
+    stdcorrectingspeed = CORSPEEDBACKWARD;
 }
 
 void GoNowhere()
 {
     Off(MOTOR_X);
     Off(MOTOR_Y);
+    Off(COMPENSATOR);
     stdcorrectingspeed = 0;
 }
 
@@ -198,11 +211,11 @@ void Go(char speedx, char speedy)
     if(speedx < -100)   speedx           = -100;
     if(speedy >  100)   speedy           =  100;
     if(speedy < -100)   speedy           = -100;
-    if(speedx >  0)     correctingspeedx = -60;
-    if(speedx <  0)     correctingspeedx =  62;
+    if(speedx >  0)     correctingspeedx =  CORSPEEDRIGHT;
+    if(speedx <  0)     correctingspeedx =  CORSPEEDLEFT;
     if(speedx == 0)     correctingspeedx =  0;
-    if(speedy >  0)     correctingspeedy = -28;
-    if(speedy <  0)     correctingspeedy =  28;
+    if(speedy >  0)     correctingspeedy =  CORSPEEDBACKWARD;
+    if(speedy <  0)     correctingspeedy =  CORSPEEDFORWARD;
     if(speedy == 0)     correctingspeedy =  0;
     
     correctingspeedx = correctingspeedx * speedx / 100;
@@ -210,6 +223,7 @@ void Go(char speedx, char speedy)
     
     OnFwd(MOTOR_X, speedx);
     OnFwd(MOTOR_Y, speedy);
+    //if(!correctorenabled) OnFwd(COMPENSATOR, correctingspeedx + correctingspeedy);
     stdcorrectingspeed = correctingspeedx + correctingspeedy;
 }
 
@@ -217,7 +231,8 @@ bool correctorenabled;
 
 task Corrector()
 {
-    int correctingspeed;
+    correctorenabled = true;
+    int correctingspeed = 0;
     while(true)
     {
         correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
@@ -228,11 +243,6 @@ task Corrector()
     }
 }
 
-//States
-#define STATENORMAL 0
-#define STATELEFT 1
-#define STATERIGHT 2
-
 //Initialisation
 void Init()
 {
@@ -241,8 +251,6 @@ void Init()
     SetSensorLowspeed(USSENSORLEFTPORT);
     SetSensorLowspeed(USSENSORBACKPORT);
     compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
-    stdcorrectingspeed = 0;
-    correctorenabled = true;
     start Corrector;
     y0 = USBACKVAL;
     x0 = USLEFTVAL;

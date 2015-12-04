@@ -10,4 +10,12 @@ task main()
     Wait(3000);
     TurnRight(100);
     Wait(3000);
+    GoLF(100);
+    Wait(3000);
+    GoRF(100);
+    Wait(3000);
+    GoLB(100);
+    Wait(3000);
+    GoRB(100);
+    Wait(3000);
 }

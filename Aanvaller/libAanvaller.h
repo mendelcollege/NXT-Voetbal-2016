@@ -6,23 +6,66 @@
 #define MOTORRIGHT OUT_C
 #define MOTORALL OUT_ABC
 
-#define TurnRight(speed)    OnFwd(MOTORLEFT, (-speed));\
-                            OnFwd(MOTORRIGHT, (-speed));\
-                            OnFwd(MOTORBACK, (-speed))
-                            
-#define TurnLeft(speed)     OnFwd(MOTORLEFT, speed);\
-                            OnFwd(MOTORRIGHT, speed);\
-                            OnFwd(MOTORBACK, speed)
+void TurnRight(char speed)
+{
+    OnRev(MOTORLEFT,  speed);
+    OnRev(MOTORRIGHT, speed);
+    OnRev(MOTORBACK,  speed);
+}
 
-#define GoForward(speed)    OnFwd(MOTORLEFT, (-speed));\
-                            OnFwd(MOTORRIGHT, speed);\
-                            Off(MOTORBACK)
+void TurnLeft(char speed)
+{
+    OnFwd(MOTORLEFT , speed);
+    OnFwd(MOTORRIGHT, speed);
+    OnFwd(MOTORBACK , speed);
+}
                             
-#define GoBackward(speed)   OnFwd(MOTORLEFT, speed);\
-                            OnFwd(MOTORRIGHT, (-speed));\
-                            Off(MOTORBACK)
+void GoForward(char speed)
+{
+    OnRev(MOTORLEFT , speed);
+    OnFwd(MOTORRIGHT, speed);
+    Off(MOTORBACK);
+}
+
+void GoBackward(char speed)
+{
+    OnFwd(MOTORLEFT , speed);
+    OnRev(MOTORRIGHT, speed);
+    Off(MOTORBACK);
+}
                             
-#define GoNowhere() Off(MOTORALL)
+void GoLB(char speed)
+{
+    OnFwd(MOTORLEFT , speed);
+    Off(MOTORRIGHT);
+    OnRev(MOTORBACK , speed);
+}
+
+void GoRB(char speed)
+{
+    Off(MOTORLEFT);
+    OnRev(MOTORRIGHT, speed);
+    OnFwd(MOTORBACK , speed);
+}
+
+void GoLF(char speed)
+{
+    Off(MOTORLEFT);
+    OnFwd(MOTORRIGHT, speed);
+    OnRev(MOTORBACK , speed);
+}
+
+void GoRF(char speed)
+{
+    OnRev(MOTORLEFT , speed);
+    Off(MOTORRIGHT);
+    OnFwd(MOTORBACK , speed);
+}
+
+void GoNowhere()
+{
+    Off(MOTORALL);
+}
 
 //Port aliases
 #define IRSEEKERPORT S1
@@ -56,8 +99,8 @@ void Kick()
 #define BALLDIRRIGHT (dir < 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define POSSESSIONTHRESHOLD 180
-#define BALLCLOSE 140
+#define POSSESSIONTHRESHOLD 255
+#define BALLCLOSE 130
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 
 int dir;

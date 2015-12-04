@@ -86,10 +86,10 @@ task main()
         
         if(dir == 5)
         {
-            if(dist < POSSESSIONTHRESHOLD)
+            if(dist > POSSESSIONTHRESHOLD)
             {
                 Float(MOTORALL);
-                BoemBoemBatsiBa();
+                //BoemBoemBatsiBa();
             }
             else
             {
@@ -99,34 +99,42 @@ task main()
         }
         else if(dir < 5)
         {
+            lastballstate = dir;
             if(dir < 3)
             {
                 TurnRight(100);
+            }
+            else if(dir == 3)
+            {
+                TurnRight(50);
             }
             else
             {
                 if(dist > BALLCLOSE)
                 {
-                    OnFwd(MOTORRIGHT, -100);
-                    OnFwd(MOTORBACK, 100);
+                    GoRB(75);
                 }
                 else TurnRight(50);
             }
         }
         else if(dir > 5)
         {
+            lastballstate = dir;
             if(dir > 7)
             {
                 TurnLeft(100);
+            }
+            else if(dir == 7)
+            {
+                TurnLeft(75);
             }
             else
             {
                 if(dist > BALLCLOSE)
                 {
-                    OnFwd(MOTORLEFT, -100);
-                    OnFwd(MOTORBACK, -100);
+                    GoLB(50);
                 }
-                else TurnRight(50);
+                else TurnLeft(50);
             }
         }
     }
