@@ -34,49 +34,18 @@ void BoemBoemBatsiBa()
 
 void GettingAwayFromItAll()
 {
-    
+    GoNowhere();
+    dist[0]
 }
 
 task main()
 {
     Init();
-    /*
     while(true)
     {
         UpdateIRValues();
         DrawSensorValues();
-        TextOut(0, LCD_LINE7, "Zoeken...    ");
-        if(dist > POSSESSIONTHRESHOLD)
-        {
-            Off(MOTORALL);
-            //BoemBoemBatsiBa();
-        }
-        else if(BALLDIRLEFT)
-        {
-            TurnLeft(100);
-            lastballstate = dir;
-        }
-        else if(BALLDIRRIGHT)
-        {
-            TurnRight(100);
-            lastballstate = dir;
-        }
-        else if(BALLDIRSTRAIGHT)
-        {
-            GoForward(100);
-        }
-        else
-        {
-            if(lastballstate > 5) TurnLeft(100);
-            if(lastballstate < 5) TurnRight(100);
-        }        
-    }
-    */
-    while(true)
-    {
-        UpdateIRValues();
-        DrawSensorValues();
-        if(dir == 0) dir = lastballstate;
+        if(BALLDIRUNKNOWN) dir = lastballstate;
         TextOut(0, LCD_LINE7, "Zoeken...    ");
         
         if(LIGHTVAL > WHITE)
@@ -84,7 +53,7 @@ task main()
             //GettingAwayFromItAll(); (from the line)
         }
         
-        if(dir == 5)
+        if(BALLDIRSTRAIGHT)
         {
             if(dist > POSSESSIONTHRESHOLD)
             {

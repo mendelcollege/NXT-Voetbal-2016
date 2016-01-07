@@ -6,63 +6,63 @@
 #define MOTORRIGHT OUT_C
 #define MOTORALL OUT_ABC
 
-void TurnRight(char speed)
+inline void TurnRight(char speed)
 {
     OnRev(MOTORLEFT,  speed);
     OnRev(MOTORRIGHT, speed);
     OnRev(MOTORBACK,  speed);
 }
 
-void TurnLeft(char speed)
+inline void TurnLeft(char speed)
 {
     OnFwd(MOTORLEFT , speed);
     OnFwd(MOTORRIGHT, speed);
     OnFwd(MOTORBACK , speed);
 }
                             
-void GoForward(char speed)
+inline void GoForward(char speed)
 {
     OnRev(MOTORLEFT , speed);
     OnFwd(MOTORRIGHT, speed);
     Off(MOTORBACK);
 }
 
-void GoBackward(char speed)
+inline void GoBackward(char speed)
 {
     OnFwd(MOTORLEFT , speed);
     OnRev(MOTORRIGHT, speed);
     Off(MOTORBACK);
 }
                             
-void GoLB(char speed)
+inline void GoLB(char speed)
 {
     OnFwd(MOTORLEFT , speed);
     Off(MOTORRIGHT);
     OnRev(MOTORBACK , speed);
 }
 
-void GoRB(char speed)
+inline void GoRB(char speed)
 {
     Off(MOTORLEFT);
     OnRev(MOTORRIGHT, speed);
     OnFwd(MOTORBACK , speed);
 }
 
-void GoLF(char speed)
+inline void GoLF(char speed)
 {
     Off(MOTORLEFT);
     OnFwd(MOTORRIGHT, speed);
     OnRev(MOTORBACK , speed);
 }
 
-void GoRF(char speed)
+inline void GoRF(char speed)
 {
     OnRev(MOTORLEFT , speed);
     Off(MOTORRIGHT);
     OnFwd(MOTORBACK , speed);
 }
 
-void GoNowhere()
+inline void GoNowhere()
 {
     Off(MOTORALL);
 }
@@ -181,36 +181,35 @@ safecall short RelCompassVal()
 }
 
 //Ultrasone / Positioning
-long usdir;
 
 #define FORWARD 0
-#define BACK 180
-#define RIGHT 90
-#define LEFT 270
+#define RIGHT 1
+#define BACK 2
+#define LEFT 3
 
-byte GetDist(long direction)
-{
-    usdir = direction;
-    Wait(100);
-    MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
-    return USVAL;
-}
+byte distance[4];
 
 task USCorrector()
 {
-    long tachopos;
+    int relpos[4] = {0, 90, 180, 270};
+    int abspos;
+    int i = 0;
     while(true)
     {
-        tachopos  = usdir - RELCOMPASSVAL;
+        abspos  = relpos[i] - RELCOMPASSVAL;
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
                            MMX_Direction_Forward,
                            100,
-                           tachopos,
+                           abspos,
                            false,  //Relative
                            true,   //Wait for completion.
-                           MMX_Next_Action_BrakeHold);
+                           MMX_Next_Action_Brake);
+        MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+        distance[i] = USVAL;
+        i++;
+        if(i == 4) i = 0;
         Wait(100);
     }
 }
@@ -248,7 +247,6 @@ void Init()
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
     lastballstate = 1;
-    usdir = 0;
     DrawSensorLabels();
     start USCorrector;
 }
