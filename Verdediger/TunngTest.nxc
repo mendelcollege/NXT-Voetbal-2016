@@ -1,0 +1,48 @@
+#include "libVerdediger.h"
+
+task main()
+{
+    while(true)
+    {
+        Off(MOTOR_ALL);
+        Wait(2000);
+
+        GoLeft();
+        Wait(3000);
+        
+        Off(MOTOR_ALL);
+        Wait(100);
+        
+        GoRight();
+        Wait(3000);
+        
+        Off(MOTOR_ALL);
+        Wait(100);
+        
+        GoForward();
+        Wait(3000);
+        
+        Off(MOTOR_ALL);
+        Wait(100);
+
+        GoBackward();
+        Wait(3000);
+        
+        
+        Off(MOTOR_ALL);
+        Wait(2000);
+
+        GoLeft();
+        Wait(3000);
+
+        GoRight();
+        Wait(3000);
+
+        GoForward();
+        Wait(3000);
+
+        GoBackward();
+        Wait(3000);
+
+    }
+}
