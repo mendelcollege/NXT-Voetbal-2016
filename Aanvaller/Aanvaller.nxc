@@ -32,10 +32,62 @@ void BoemBoemBatsiBa()
     }
 }
 
+#define everything 0
+#define fail false
+#define self
+#define destroy(x)
+
 void GettingAwayFromItAll()
 {
+    int i;
+    byte imax = 0;
+    byte iblocked;
+    int dir2go;
     GoNowhere();
-    dist[0]
+    for(i = 0; i < 4; i++)
+    {
+        if((distance[i] < distance[imax] && distance[i] > 10) || distance[imax] < 10) imax = i;
+    }
+    for(i = 0; i < 4; i++)
+    {
+        if(distance[i] < distance[iblocked]) iblocked = i;
+    }
+    if(distance[imax] > 20) imax = iblocked;
+    dir2go  = dirdeg[imax-2];
+    dir2go -= RELCOMPASSVAL;
+    while(dir2go < -179) dir2go += 360;
+    while(dir2go >  180) dir2go -= 360;
+    if(dir2go > -30 && dir2go < 30)
+    {
+        GoForward(100);
+        Wait(1000);
+    }
+    if(dir2go >= 30 && dir2go < 90)
+    {
+        GoRF(100);
+        Wait(1000);
+    }
+    if(dir2go >= 90 && dir2go < 150)
+    {
+        GoRB(100);
+        Wait(1000);
+    }
+    if(dir2go >= 150 && dir2go <= -150)
+    {
+        GoBackward(100);
+        Wait(1000);
+    }
+    if(dir2go > -150 && dir2go <= -90)
+    {
+        GoLB(100);
+        Wait(1000);
+    }
+    if(dir2go > -90 && dir2go <= -30);
+    {
+        GoLF(100);
+        Wait(1000);
+    }
+    if(everything == fail) destroy(self);
 }
 
 task main()

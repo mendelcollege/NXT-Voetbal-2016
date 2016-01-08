@@ -188,15 +188,15 @@ safecall short RelCompassVal()
 #define LEFT 3
 
 byte distance[4];
+int dirdeg[4] = {0, 90, 180, 270};
 
 task USCorrector()
 {
-    int relpos[4] = {0, 90, 180, 270};
     int abspos;
     int i = 0;
     while(true)
     {
-        abspos  = relpos[i] - RELCOMPASSVAL;
+        abspos  = dirdeg[i] - RELCOMPASSVAL;
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
