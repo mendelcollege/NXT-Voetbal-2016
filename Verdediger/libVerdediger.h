@@ -154,6 +154,7 @@ char stdcorrectingspeed;
 #define MOTOR_Y OUT_B
 #define MOTOR_X OUT_A
 #define COMPENSATOR OUT_C
+#define MOTOR_ALL OUT_ABC
 
 #define CORSPEEDLEFT 62
 #define CORSPEEDRIGHT -60
@@ -163,7 +164,7 @@ char stdcorrectingspeed;
 #define TurnRight(speed) OnFwd(COMPENSATOR, speed)
 #define TurnLeft(speed) OnFwd(COMPENSATOR, (-speed))
 
-void GoLeft()
+inline void GoLeft()
 {
     OnFwd(MOTOR_X, -100);
     Off(MOTOR_Y);
@@ -171,7 +172,7 @@ void GoLeft()
     stdcorrectingspeed = CORSPEEDLEFT;
 }
 
-void GoRight()
+inline void GoRight()
 {
     OnFwd(MOTOR_X, 100);
     Off(MOTOR_Y);
@@ -179,7 +180,7 @@ void GoRight()
     stdcorrectingspeed = CORSPEEDRIGHT;
 }
 
-void GoForward()
+inline void GoForward()
 {
     Off(MOTOR_X);
     OnFwd(MOTOR_Y, -100);
@@ -187,7 +188,7 @@ void GoForward()
     stdcorrectingspeed = CORSPEEDFORWARD;
 }
 
-void GoBackward()
+inline void GoBackward()
 {
     Off(MOTOR_X);
     OnFwd(MOTOR_Y, 100);
@@ -195,7 +196,7 @@ void GoBackward()
     stdcorrectingspeed = CORSPEEDBACKWARD;
 }
 
-void GoNowhere()
+inline void GoNowhere()
 {
     Off(MOTOR_X);
     Off(MOTOR_Y);
