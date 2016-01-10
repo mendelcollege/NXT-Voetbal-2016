@@ -149,9 +149,9 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist
 }
 
 //Compass
-short compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
+int compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
 
-safecall short CompassVal()
+safecall int CompassVal()
 {
     if(RAWCOMPASSVAL < 0)
     {
@@ -163,9 +163,9 @@ safecall short CompassVal()
     }
 }
 
-safecall short RelCompassVal()
+safecall int RelCompassVal()
 {
-    short tmp = RAWCOMPASSVAL - compassbeginval;
+    int tmp = RAWCOMPASSVAL - compassbeginval;
     if(tmp <= 180 && tmp >= -179)
     {
         return tmp;
