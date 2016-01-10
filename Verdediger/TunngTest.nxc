@@ -7,41 +7,57 @@ task main()
         Off(MOTOR_ALL);
         Wait(2000);
 
-        GoLeft();
+        OnFwd(MOTOR_X, -100);
+        Off(MOTOR_Y);
+        OnFwd(COMPENSATOR, CORSPEEDLEFT);
         Wait(3000);
         
         Off(MOTOR_ALL);
         Wait(100);
         
-        GoRight();
+        OnFwd(MOTOR_X, 100);
+        Off(MOTOR_Y);
+        OnFwd(COMPENSATOR, CORSPEEDRIGHT);
         Wait(3000);
         
         Off(MOTOR_ALL);
         Wait(100);
         
-        GoForward();
+        Off(MOTOR_X);
+        OnFwd(MOTOR_Y, -100);
+        OnFwd(COMPENSATOR, CORSPEEDFORWARD);
         Wait(3000);
         
         Off(MOTOR_ALL);
         Wait(100);
 
-        GoBackward();
+        Off(MOTOR_X);
+        OnFwd(MOTOR_Y, 100);
+        OnFwd(COMPENSATOR, CORSPEEDBACKWARD);
         Wait(3000);
         
         
         Off(MOTOR_ALL);
         Wait(2000);
 
-        GoLeft();
+        OnFwd(MOTOR_X, -100);
+        Off(MOTOR_Y);
+        OnFwd(COMPENSATOR, CORSPEEDLEFT);
         Wait(3000);
 
-        GoRight();
+        OnFwd(MOTOR_X, 100);
+        Off(MOTOR_Y);
+        OnFwd(COMPENSATOR, CORSPEEDRIGHT);
         Wait(3000);
 
-        GoForward();
+        Off(MOTOR_X);
+        OnFwd(MOTOR_Y, -100);
+        OnFwd(COMPENSATOR, CORSPEEDFORWARD);
         Wait(3000);
 
-        GoBackward();
+        Off(MOTOR_X);
+        OnFwd(MOTOR_Y, 100);
+        OnFwd(COMPENSATOR, CORSPEEDBACKWARD);
         Wait(3000);
 
     }
