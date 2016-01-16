@@ -75,7 +75,7 @@ inline void GoNowhere()
 #define MMXPORT S4
 
 //Kicker
-#define RECHARGINGTIME 3000
+#define RECHARGINGTIME 10000
 
 void Kick()
 {
@@ -149,7 +149,7 @@ void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist
 }
 
 //Compass
-int compassbeginval;                                                          //compassbeginval =  COMPASSVAL;
+int compassbeginval;
 
 safecall int CompassVal()
 {
@@ -189,14 +189,16 @@ safecall int RelCompassVal()
 
 byte distance[4];
 int dirdeg[4] = {0, 90, 180, 270};
+bool distcheckerenabled;
 
-task USCorrector()
+task DistChecker()
 {
     int abspos;
     int i = 0;
     while(true)
     {
         abspos  = dirdeg[i] - RELCOMPASSVAL;
+        if(distcheckerenabled)
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
@@ -247,6 +249,7 @@ void Init()
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
     lastballstate = 1;
+    distcheckerenabled = true;
     DrawSensorLabels();
-    start USCorrector;
+    start DistChecker;
 }
