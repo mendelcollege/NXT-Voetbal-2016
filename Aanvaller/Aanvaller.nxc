@@ -102,7 +102,8 @@ task main()
         
         if(LIGHTVAL > WHITE)
         {
-            //GettingAwayFromItAll(); (from the line)
+            GoOpposite();
+            Wait(1500);
         }
         
         if(BALLDIRSTRAIGHT)
