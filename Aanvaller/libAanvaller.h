@@ -14,7 +14,9 @@ enum drivedir
     RF,
     LB,
     RB
-}drivedir;
+};
+
+drivedir currentdrivedir;
 
 inline void TurnRight(char speed)
 {
@@ -35,7 +37,7 @@ inline void GoForward(char speed)
     OnRev(MOTORLEFT , speed);
     OnFwd(MOTORRIGHT, speed);
     Off(MOTORBACK);
-    drivedir = FORWARD;
+    currentdrivedir = FORWARD;
 }
 
 inline void GoBackward(char speed)
@@ -43,7 +45,7 @@ inline void GoBackward(char speed)
     OnFwd(MOTORLEFT , speed);
     OnRev(MOTORRIGHT, speed);
     Off(MOTORBACK);
-    drivedir = BACKWARD;
+    currentdrivedir = BACKWARD;
 }
                             
 inline void GoLB(char speed)
@@ -51,7 +53,7 @@ inline void GoLB(char speed)
     OnFwd(MOTORLEFT , speed);
     Off(MOTORRIGHT);
     OnRev(MOTORBACK , speed);
-    drivedir = LB;
+    currentdrivedir = LB;
 }
 
 inline void GoRB(char speed)
@@ -59,7 +61,7 @@ inline void GoRB(char speed)
     Off(MOTORLEFT);
     OnRev(MOTORRIGHT, speed);
     OnFwd(MOTORBACK , speed);
-    drivedir = RB;
+    currentdrivedir = RB;
 }
 
 inline void GoLF(char speed)
@@ -67,7 +69,7 @@ inline void GoLF(char speed)
     Off(MOTORLEFT);
     OnFwd(MOTORRIGHT, speed);
     OnRev(MOTORBACK , speed);
-    drivedir = LF;
+    currentdrivedir = LF;
 }
 
 inline void GoRF(char speed)
@@ -75,7 +77,7 @@ inline void GoRF(char speed)
     OnRev(MOTORLEFT , speed);
     Off(MOTORRIGHT);
     OnFwd(MOTORBACK , speed);
-    drivedir = RF;
+    currentdrivedir = RF;
 }
 
 inline void GoNowhere()
@@ -85,7 +87,7 @@ inline void GoNowhere()
 
 void GoOpposite()
 {
-    switch(drivedir)
+    switch(currentdrivedir)
     {
         case FORWARD:
         GoBackward(100);
@@ -110,6 +112,7 @@ void GoOpposite()
         case RB:
         GoLF(100);
         break;
+    }
 }
 
 //Port aliases
