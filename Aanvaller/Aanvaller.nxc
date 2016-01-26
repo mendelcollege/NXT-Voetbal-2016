@@ -2,7 +2,6 @@
 
 void BoemBoemBatsiBa()
 {
-    static long tlastkick;
     Off(MOTORALL);
     while(true)
     {
@@ -19,7 +18,6 @@ void BoemBoemBatsiBa()
                 GoForward(100);
                 Wait(500);
                 Kick();
-                tlastkick = CurrentTick();
                 Wait(500);
                 Off(MOTORALL);
                 break;
@@ -103,7 +101,7 @@ task main()
         if(LIGHTVAL > WHITE)
         {
             GoOpposite();
-            Wait(1500);
+            Wait(500);
         }
         
         if(BALLDIRSTRAIGHT)

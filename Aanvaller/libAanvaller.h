@@ -14,9 +14,7 @@ enum drivedir
     RF,
     LB,
     RB
-};
-
-drivedir currentdrivedir;
+} currentdrivedir;
 
 inline void TurnRight(char speed)
 {
@@ -124,12 +122,14 @@ void GoOpposite()
 
 //Kicker
 #define RECHARGINGTIME 10000
+long tlastkick;
 
 void Kick()
 {
     MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_2, MMX_Direction_Forward, 75);
-    Wait(500);
+    Wait(25);   //Hou zo laag mogelijk. => Save energy! Save the planet!
     MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Float);
+    tlastkick = CurrentTick();
 }
 
 //Sensor aliases
@@ -229,14 +229,13 @@ safecall int RelCompassVal()
 }
 
 //Ultrasone / Positioning
-
 #define FORWARD 0
 #define RIGHT 1
 #define BACK 2
 #define LEFT 3
 
 byte distance[4];
-int dirdeg[4] = {0, 90, 180, 270};
+const int dirdeg[4] = {0, 90, 180, 270};
 bool distcheckerenabled;
 
 task DistChecker()
@@ -246,16 +245,15 @@ task DistChecker()
     while(true)
     {
         abspos  = dirdeg[i] - RELCOMPASSVAL;
-        if(distcheckerenabled)
-        MMX_Run_Tachometer(MMXPORT,
-                           0x06,
-                           MMX_Motor_1,
-                           MMX_Direction_Forward,
-                           100,
-                           abspos,
-                           false,  //Relative
-                           true,   //Wait for completion.
-                           MMX_Next_Action_Brake);
+        if(distcheckerenabled) MMX_Run_Tachometer( MMXPORT,
+                                                   0x06,
+                                                   MMX_Motor_1,
+                                                   MMX_Direction_Forward,
+                                                   100,
+                                                   abspos,
+                                                   false,  //Relative
+                                                   true,   //Wait for completion.
+                                                   MMX_Next_Action_Brake);
         MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
         distance[i] = USVAL;
         i++;
@@ -292,7 +290,7 @@ void Init()
 {
     SetSensorLowspeed(IRSEEKERPORT);
     SetSensorLowspeed(COMPASSSENSORPORT);
-    SetSensorLight(LIGHTSENSORPORT);
+    SetSensorType(LICHTSENSORPORT, SENSOR_TYPE_LIGHT);
     SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
