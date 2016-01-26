@@ -1,5 +1,11 @@
 #include "NXTMMX-lib.h"
 
+//General
+inline bool aproxequal(float n1, float n2, float maxdif)
+{
+    return (abs(n1-n2) < maxdif);
+}
+
 //Motorstuffs (to-do)
 #define MOTORLEFT OUT_A
 #define MOTORBACK OUT_B
@@ -122,11 +128,11 @@ void GoOpposite()
 
 //Kicker
 #define RECHARGINGTIME 10000
-long tlastkick;
+long tlastkick = 0;
 
 void Kick()
 {
-    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_2, MMX_Direction_Forward, 75);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_2, MMX_Direction_Forward, 100);
     Wait(25);   //Hou zo laag mogelijk. => Save energy! Save the planet!
     MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Float);
     tlastkick = CurrentTick();
@@ -153,7 +159,7 @@ void Kick()
 
 int dir;
 int dist;
-char lastballstate;
+char lastballstate = 1;
 
 void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist)
 {
@@ -228,6 +234,16 @@ safecall int RelCompassVal()
     }
 }
 
+//Field dimensions (in cm)
+#define STADIUMWIDTH 182
+#define STADIUMLENGTH 244
+
+#define FIELDWIDTH 122
+#define FIELDLENGTH 184
+
+#define GOALWIDTH 60
+#define GOALWALLDIST 61
+
 //Ultrasone / Positioning
 #define FORWARD 0
 #define RIGHT 1
@@ -236,7 +252,7 @@ safecall int RelCompassVal()
 
 byte distance[4];
 const int dirdeg[4] = {0, 90, 180, 270};
-bool distcheckerenabled;
+bool distcheckerenabled = true;
 
 task DistChecker()
 {
@@ -245,15 +261,16 @@ task DistChecker()
     while(true)
     {
         abspos  = dirdeg[i] - RELCOMPASSVAL;
-        if(distcheckerenabled) MMX_Run_Tachometer( MMXPORT,
-                                                   0x06,
-                                                   MMX_Motor_1,
-                                                   MMX_Direction_Forward,
-                                                   100,
-                                                   abspos,
-                                                   false,  //Relative
-                                                   true,   //Wait for completion.
-                                                   MMX_Next_Action_Brake);
+        if(distcheckerenabled)
+            MMX_Run_Tachometer(MMXPORT,
+                               0x06,
+                               MMX_Motor_1,
+                               MMX_Direction_Forward,
+                               100,
+                               abspos,
+                               false,  //Relative
+                               true,   //Wait for completion.
+                               MMX_Next_Action_Brake);
         MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
         distance[i] = USVAL;
         i++;
@@ -290,12 +307,10 @@ void Init()
 {
     SetSensorLowspeed(IRSEEKERPORT);
     SetSensorLowspeed(COMPASSSENSORPORT);
-    SetSensorType(LICHTSENSORPORT, SENSOR_TYPE_LIGHT);
+    SetSensorType(LIGHTSENSORPORT, SENSOR_TYPE_LIGHT);
     SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
-    lastballstate = 1;
-    distcheckerenabled = true;
     DrawSensorLabels();
     start DistChecker;
 }

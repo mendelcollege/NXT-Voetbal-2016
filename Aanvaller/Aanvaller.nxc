@@ -1,34 +1,5 @@
 #include "libAanvaller.h"
-
-void BoemBoemBatsiBa()
-{
-    Off(MOTORALL);
-    while(true)
-    {
-        TextOut(0, LCD_LINE7, "Richten...   ");
-        if(!BALLPOSSESSION) break;
-        if(RELCOMPASSVAL > 5) TurnLeft(75);
-        if(RELCOMPASSVAL < -5) TurnRight(75);
-        if(abs(RELCOMPASSVAL) < 5)
-        {
-            Off(MOTORALL);
-            if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
-            {
-                TextOut(0, LCD_LINE7, "Kicken...    ");
-                GoForward(100);
-                Wait(500);
-                Kick();
-                Wait(500);
-                Off(MOTORALL);
-                break;
-            }
-            else
-            {
-                TextOut(0, LCD_LINE7, "Recharging...");
-            }
-        }
-    }
-}
+#include "Scoring.h"
 
 #define everything 0
 #define fail false
@@ -96,7 +67,7 @@ task main()
         UpdateIRValues();
         DrawSensorValues();
         if(BALLDIRUNKNOWN) dir = lastballstate;
-        TextOut(0, LCD_LINE7, "Zoeken...    ");
+        TextOut(0, LCD_LINE7, "Zoeken...  ");
         
         if(LIGHTVAL > WHITE)
         {
