@@ -1,10 +1,7 @@
 #include "NXTMMX-lib.h"
 
 //General
-inline bool aproxequal(float n1, float n2, float maxdif)
-{
-    return (abs(n1-n2) < maxdif);
-}
+#define aproxequal(n1, n2, maxdif) (abs(n1-n2) < maxdif)
 
 //Motorstuffs (to-do)
 #define MOTORLEFT OUT_A
@@ -94,29 +91,31 @@ void GoOpposite()
     switch(currentdrivedir)
     {
         case FORWARD:
-        GoBackward(100);
-        break;
-        
+            GoBackward(100);
+            break;
         case BACKWARD:
-        GoForward(100);
-        break;
-        
+            GoForward(100);
+            break;
         case LF:
-        GoRB(100);
-        break;
-        
+            GoRB(100);
+            break;
         case RF:
-        GoLB(100);
-        break;
-        
+            GoLB(100);
+            break;
         case LB:
-        GoRF(100);
-        break;
-        
+            GoRF(100);
+            break;
         case RB:
-        GoLF(100);
-        break;
+            GoLF(100);
+            break;
     }
+}
+
+void TurnTo(int turn, char speed)
+{
+    while(RELCOMPASSVAL > turn + 5) TurnLeft(speed);
+    while(RELCOMPASSVAL < turn - 5) TurnRight(speed);
+    GoNowhere();
 }
 
 //Port aliases
@@ -128,7 +127,7 @@ void GoOpposite()
 
 //Kicker
 #define RECHARGINGTIME 10000
-long tlastkick = 0;
+unsigned long tlastkick = 0;
 
 void Kick()
 {
@@ -275,7 +274,7 @@ task DistChecker()
         distance[i] = USVAL;
         i++;
         if(i == 4) i = 0;
-        Wait(100);
+        Yield();
     }
 }
 

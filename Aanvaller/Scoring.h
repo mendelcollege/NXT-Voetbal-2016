@@ -1,6 +1,6 @@
 void BoemBoemBatsiBa()
 {
-    Off(MOTORALL);
+    GoNowhere();
     while(true)
     {
         UpdateIRValues();
@@ -13,7 +13,7 @@ void BoemBoemBatsiBa()
             Off(MOTORALL);
             if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
             {
-                TextOut(0, LCD_LINE7, "Kicken...    ");
+                TextOut(0, LCD_LINE7, "Kick...    ");
                 GoForward(100);
                 Wait(500);
                 Kick();
@@ -38,15 +38,13 @@ void BoemBoemBatsiBaTheSequel()
     //Turn Forward
     GoNowhere();
     if(!BALLPOSSESSION) return;
-    while(RELCOMPASSVAL > 5) TurnLeft(75);
-    while(RELCOMPASSVAL < -5) TurnRight(75);
-    GoNowhere();
+    TurnTo(0, 75);
     if(!BALLPOSSESSION) return;
 
     //Check Readings
     if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));
     {
-        PlayTone(TONE_A7, 1000);
+        PlayTone(TONE_G3, 500);
     }
 
     //Calc pos from goal
@@ -70,11 +68,17 @@ void BoemBoemBatsiBaTheSequel()
     aim = (atan(temp) * 57.296);
 
     //Aim
-    while(RELCOMPASSVAL > aim + 5) TurnLeft(75);
-    while(RELCOMPASSVAL < aim - 5) TurnRight(75);
+    TurnTo(aim, 75);
+    if(!BALLPOSSESSION) return;
 
     //Kick
-    while(CurrentTick() - tlastkick < RECHARGINGTIME - 500);
+    while(CurrentTick() - tlastkick < RECHARGINGTIME - 500)
+    {
+        TextOut(0, LCD_LINE7, "Charging...");
+        PlayTone(TONE_A7, 50);
+    }
+    if(!BALLPOSSESSION) return;
+    TextOut(0, LCD_LINE7, "Kick...    ");
     GoForward(100);
     Wait(500);
     Kick();
