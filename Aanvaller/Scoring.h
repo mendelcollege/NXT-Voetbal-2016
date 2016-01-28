@@ -37,8 +37,10 @@ void BoemBoemBatsiBaTheSequel()
 
     //Turn Forward
     GoNowhere();
+    UpdateIRValues();
     if(!BALLPOSSESSION) return;
     TurnTo(0, 75);
+    UpdateIRValues();
     if(!BALLPOSSESSION) return;
 
     //Check Readings
@@ -69,6 +71,7 @@ void BoemBoemBatsiBaTheSequel()
 
     //Aim
     TurnTo(aim, 75);
+    UpdateIRValues();
     if(!BALLPOSSESSION) return;
 
     //Kick
@@ -77,6 +80,7 @@ void BoemBoemBatsiBaTheSequel()
         TextOut(0, LCD_LINE7, "Charging...");
         PlayTone(TONE_A7, 50);
     }
+    UpdateIRValues();
     if(!BALLPOSSESSION) return;
     TextOut(0, LCD_LINE7, "Kick...    ");
     GoForward(100);

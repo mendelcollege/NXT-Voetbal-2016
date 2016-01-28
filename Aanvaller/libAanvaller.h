@@ -111,13 +111,6 @@ void GoOpposite()
     }
 }
 
-void TurnTo(int turn, char speed)
-{
-    while(RELCOMPASSVAL > turn + 5) TurnLeft(speed);
-    while(RELCOMPASSVAL < turn - 5) TurnRight(speed);
-    GoNowhere();
-}
-
 //Port aliases
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
@@ -231,6 +224,15 @@ safecall int RelCompassVal()
     {
         return tmp + 360;
     }
+}
+
+void TurnTo(int turn, char speed)
+{
+    TurnLeft(speed);
+    while(RELCOMPASSVAL > turn + 5);
+    TurnRight(speed);
+    while(RELCOMPASSVAL < turn - 5);
+    GoNowhere();
 }
 
 //Field dimensions (in cm)
