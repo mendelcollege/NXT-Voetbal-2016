@@ -87,3 +87,17 @@ void BoemBoemBatsiBaTheSequel()
     Wait(500);
     Kick();
 }
+
+void basicbitch()
+{
+    int improveddistance [4];
+    while(distance[LEFT] - distance[RIGHT] = 10)
+    {
+        GoRight(100);
+    }
+    else
+    {
+        GoLeft(100);
+        while(!voorwaarde);
+    }
+}
