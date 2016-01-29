@@ -128,5 +128,6 @@ task main()
                 else TurnLeft(50);
             }
         }
+        Yield();
     }
 }
