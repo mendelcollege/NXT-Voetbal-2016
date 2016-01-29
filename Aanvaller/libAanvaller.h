@@ -228,6 +228,8 @@ safecall int RelCompassVal()
 
 void TurnTo(int turn, char speed)
 {
+    while(turn <= -180) turn += 360;
+    while(turn >   180) turn -= 360;
     TurnLeft(speed);
     while(RELCOMPASSVAL > turn + 5);
     TurnRight(speed);
@@ -244,6 +246,7 @@ void TurnTo(int turn, char speed)
 
 #define GOALWIDTH 60
 #define GOALWALLDIST 61
+#define GOALDEPTH 10
 
 //Ultrasone / Positioning
 #define FORWARD 0

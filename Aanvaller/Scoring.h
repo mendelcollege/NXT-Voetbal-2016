@@ -33,20 +33,27 @@ void BoemBoemBatsiBaTheSequel()
 {
     int improveddistance[4];
     int aim;
+    bool blocked;
     float temp;
 
-    //Turn Forward
+    //Turn maybe
     GoNowhere();
     UpdateIRValues();
     if(!BALLPOSSESSION) return;
-    TurnTo(0, 75);
+    for(int i = 0; i < 4; i++)
+    {
+        if (distance[i] < 10) blocked = true;
+    }
+    PlayTone(TONE_G3, 500);
+    if(blocked) TurnTo(RELCOMPASSVAL + 45, 75);
+    Wait(1000);
     UpdateIRValues();
     if(!BALLPOSSESSION) return;
-
+    
     //Check Readings
     if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));
     {
-        PlayTone(TONE_G3, 500);
+        PlayTone(TONE_A4, 500);
     }
 
     //Calc pos from goal
@@ -67,7 +74,7 @@ void BoemBoemBatsiBaTheSequel()
 
     //Calc tan -> angle
     temp = improveddistance[FORWARD] / temp;
-    aim = (atan(temp) * 57.296);
+    aim = atan(temp) * 57.296;
 
     //Aim
     TurnTo(aim, 75);
@@ -88,16 +95,118 @@ void BoemBoemBatsiBaTheSequel()
     Kick();
 }
 
-void basicbitch()
+void BasicBitch()
 {
     int improveddistance [4];
-    while(distance[LEFT] - distance[RIGHT] = 10)
+    bool blocked;
+    
+    //Turn maybe
+    GoNowhere();
+    UpdateIRValues();
+    if(!BALLPOSSESSION) return;
+    for(int i = 0; i < 4; i++)
     {
-        GoRight(100);
+        if (distance[i] < 10) blocked = true;
+    }
+    PlayTone(TONE_G3, 500);
+    if(blocked) TurnTo(RELCOMPASSVAL + 45, 75);
+    Wait(1000);
+    UpdateIRValues();
+    if(!BALLPOSSESSION) return;
+
+    //Check Readings
+    if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));
+    {
+        PlayTone(TONE_A4, 500);
+    }
+
+    //Calc pos from goal
+    if(distance[LEFT] > distance[RIGHT])
+    {
+        improveddistance[LEFT] = distance[LEFT];
+        improveddistance[RIGHT] = STADIUMWIDTH - distance[LEFT];
     }
     else
     {
-        GoLeft(100);
-        while(!voorwaarde);
+        improveddistance[RIGHT] = distance[RIGHT];
+        improveddistance[LEFT] = STADIUMWIDTH - distance[RIGHT];
     }
+    if(improveddistance[LEFT] < improveddistance[RIGHT])
+    {
+        TurnTo(-60,75);
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+        GoRB(100);
+        while(STADIUMWIDTH / 2 < distance[RIGHT]);
+        TurnTo(0,75);
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+    }
+    else
+    {
+        TurnTo(60,75);
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+        GoLB(100);
+        while(STADIUMWIDTH / 2 < distance[LEFT]);
+        TurnTo(0,75);
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+    }
+    if(distance[FORWARD] < 20)
+    {
+        while(CurrentTick() - tlastkick < RECHARGINGTIME - 1300)
+        {
+            TextOut(0, LCD_LINE7, "Charging...");
+            PlayTone(TONE_A7, 50);
+        }
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+        if(Random(2) == 1)
+        {
+            GoLB(100);
+            Wait(1000);
+            GoForward(100);
+            Wait(300);
+            Kick();
+        }
+        else
+        {
+            GoRB(100);
+            Wait(1000);
+            GoForward(100);
+            Wait(300);
+            Kick();
+        }
+    }
+    else
+    {
+        GoForward(100);
+        while(distance[FORWARD] > 20);
+        GoNowhere();
+        while(CurrentTick() - tlastkick < RECHARGINGTIME - 1300)
+        {
+            TextOut(0, LCD_LINE7, "Charging...");
+            PlayTone(TONE_A7, 50);
+        }
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+        if(Random(2) == 1)
+        {
+            GoLB(100);
+            Wait(1000);
+            GoForward(100);
+            Wait(300);
+            Kick();
+        }
+        else
+        {
+            GoRB(100);
+            Wait(1000);
+            GoForward(100);
+            Wait(300);
+            Kick();
+        }
+    }
+    
 }
