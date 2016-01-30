@@ -120,12 +120,13 @@ void GoOpposite()
 
 //Kicker
 #define RECHARGINGTIME 10000
+#define KICKTIME 25
 unsigned long tlastkick = 0;
 
 void Kick()
 {
     MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_2, MMX_Direction_Forward, 100);
-    Wait(25);   //Hou zo laag mogelijk. => Save energy! Save the planet!
+    Wait(KICKTIME);   //Hou zo laag mogelijk. => Save energy! Save the planet!
     MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Float);
     tlastkick = CurrentTick();
 }
