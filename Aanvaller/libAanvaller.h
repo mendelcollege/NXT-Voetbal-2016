@@ -228,8 +228,9 @@ safecall int RelCompassVal()
 
 void TurnTo(int turn, char speed)
 {
-    while(turn <= -180) turn += 360;
-    while(turn >   180) turn -= 360;
+    int compass = RELCOMPASSVAL;
+    while(turn <= compass - 180) turn += 360;
+    while(turn >  compass + 180) turn -= 360;
     TurnLeft(speed);
     while(RELCOMPASSVAL > turn + 5);
     TurnRight(speed);
@@ -312,6 +313,7 @@ void Init()
     SetSensorLowspeed(IRSEEKERPORT);
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorType(LIGHTSENSORPORT, SENSOR_TYPE_LIGHT);
+    SetSensorMode(LIGHTSENSORPORT, SENSOR_MODE_PERCENT);
     SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
