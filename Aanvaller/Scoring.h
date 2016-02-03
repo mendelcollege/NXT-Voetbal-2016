@@ -4,7 +4,7 @@ void BoemBoemBatsiBa()
     while(true)
     {
         UpdateIRValues();
-        TextOut(0, LCD_LINE7, "Richten... ");
+        TextOut(0, LCD_LINE7, "Richten...", DRAW_OPT_CLEAR_EOL);
         if(!BALLPOSSESSION) break;
         if(RELCOMPASSVAL > 5) TurnLeft(75);
         if(RELCOMPASSVAL < -5) TurnRight(75);
@@ -13,7 +13,7 @@ void BoemBoemBatsiBa()
             Off(MOTORALL);
             if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
             {
-                TextOut(0, LCD_LINE7, "Kick...    ");
+                TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
                 GoForward(100);
                 Wait(500);
                 Kick();
@@ -23,7 +23,7 @@ void BoemBoemBatsiBa()
             }
             else
             {
-                TextOut(0, LCD_LINE7, "Charging...");
+                TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
             }
         }
     }
@@ -84,12 +84,12 @@ void BoemBoemBatsiBaTheSequel()
     //Kick
     while(CurrentTick() - tlastkick < RECHARGINGTIME - 500)
     {
-        TextOut(0, LCD_LINE7, "Charging...");
+        TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
         PlayTone(TONE_A7, 50);
     }
     UpdateIRValues();
     if(!BALLPOSSESSION) return;
-    TextOut(0, LCD_LINE7, "Kick...    ");
+    TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
     GoForward(100);
     Wait(500);
     Kick();
@@ -157,11 +157,12 @@ void BasicBitch()
     {
         while(CurrentTick() - tlastkick < RECHARGINGTIME - 1300)
         {
-            TextOut(0, LCD_LINE7, "Charging...");
+            TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
             PlayTone(TONE_A7, 50);
         }
         UpdateIRValues();
         if(!BALLPOSSESSION) return;
+        TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
         if(Random(2) == 1)
         {
             GoLB(100);
@@ -186,11 +187,12 @@ void BasicBitch()
         GoNowhere();
         while(CurrentTick() - tlastkick < RECHARGINGTIME - 1300)
         {
-            TextOut(0, LCD_LINE7, "Charging...");
+            TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
             PlayTone(TONE_A7, 50);
         }
         UpdateIRValues();
         if(!BALLPOSSESSION) return;
+        TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
         if(Random(2) == 1)
         {
             GoLB(100);

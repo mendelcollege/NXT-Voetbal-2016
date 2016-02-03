@@ -296,15 +296,11 @@ void DrawSensorLabels()
 
 void DrawSensorValues()
 {
-    NumOut(50,  LCD_LINE1, dir);
-    TextOut(50, LCD_LINE2, "    ");
-    NumOut(50,  LCD_LINE2, dist);
-    TextOut(50, LCD_LINE3, "    ");
-    NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
-    TextOut(50, LCD_LINE4, "   ");
-    NumOut(50,  LCD_LINE4, LIGHTVAL);
-    TextOut(50, LCD_LINE5, "   ");
-    NumOut(50,  LCD_LINE5, USVAL);
+    NumOut(50,  LCD_LINE1, dir, DRAW_OPT_CLEAR_EOL);
+    NumOut(50,  LCD_LINE2, dist, DRAW_OPT_CLEAR_EOL);
+    NumOut(50,  LCD_LINE3, RELCOMPASSVAL, DRAW_OPT_CLEAR_EOL);
+    NumOut(50,  LCD_LINE4, LIGHTVAL, DRAW_OPT_CLEAR_EOL);
+    NumOut(50,  LCD_LINE5, USVAL, DRAW_OPT_CLEAR_EOL);
 }
 
 //Initialisation

@@ -67,7 +67,7 @@ task main()
         UpdateIRValues();
         DrawSensorValues();
         if(BALLDIRUNKNOWN) dir = lastballstate;
-        TextOut(0, LCD_LINE7, "Zoeken...  ");
+        TextOut(0, LCD_LINE7, "Zoeken...", DRAW_OPT_CLEAR_EOL);
         
         if(LIGHTVAL > WHITE)
         {
