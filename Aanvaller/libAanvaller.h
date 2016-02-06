@@ -120,7 +120,7 @@ void GoOpposite()
 
 //Kicker
 #define RECHARGINGTIME 10000
-#define KICKTIME 25
+#define KICKTIME 30
 unsigned long tlastkick = 0;
 
 void Kick()

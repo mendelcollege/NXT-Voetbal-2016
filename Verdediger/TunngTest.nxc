@@ -7,7 +7,7 @@ task main()
         Off(MOTOR_ALL);
         Wait(2000);
 
-        OnFwd(MOTOR_X, -100);
+        OnFwd(MOTOR_X, 100);
         Off(MOTOR_Y);
         OnFwd(COMPENSATOR, CORSPEEDLEFT);
         Wait(3000);
@@ -15,7 +15,7 @@ task main()
         Off(MOTOR_ALL);
         Wait(100);
         
-        OnFwd(MOTOR_X, 100);
+        OnFwd(MOTOR_X, -100);
         Off(MOTOR_Y);
         OnFwd(COMPENSATOR, CORSPEEDRIGHT);
         Wait(3000);
@@ -40,12 +40,12 @@ task main()
         Off(MOTOR_ALL);
         Wait(2000);
 
-        OnFwd(MOTOR_X, -100);
+        OnFwd(MOTOR_X, 100);
         Off(MOTOR_Y);
         OnFwd(COMPENSATOR, CORSPEEDLEFT);
         Wait(3000);
 
-        OnFwd(MOTOR_X, 100);
+        OnFwd(MOTOR_X, -100);
         Off(MOTOR_Y);
         OnFwd(COMPENSATOR, CORSPEEDRIGHT);
         Wait(3000);

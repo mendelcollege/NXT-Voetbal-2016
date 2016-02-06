@@ -93,11 +93,11 @@ task main()
             lastballstate = dir;
             if(dir < 3)
             {
-                TurnRight(75);
+                TurnRight(50);
             }
             else if(dir == 3)
             {
-                TurnRight(50);
+                TurnRight(40);
             }
             else
             {
