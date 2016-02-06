@@ -1,8 +1,11 @@
+#include "NXTMMX-lib.h"
+
 //Port aliases
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
 #define USSENSORLEFTPORT S3
 #define USSENSORBACKPORT S4
+#define MMXPORT S4
 
 //Sensor value aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, dir, dist)
@@ -167,6 +170,7 @@ char stdcorrectingspeed;
 inline void GoLeft()
 {
     OnFwd(MOTOR_X, 100);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
     Off(MOTOR_Y);
     //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDLEFT);
     stdcorrectingspeed = CORSPEEDLEFT;
@@ -175,6 +179,7 @@ inline void GoLeft()
 inline void GoRight()
 {
     OnFwd(MOTOR_X, -100);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
     Off(MOTOR_Y);
     //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDRIGHT);
     stdcorrectingspeed = CORSPEEDRIGHT;
@@ -183,6 +188,7 @@ inline void GoRight()
 inline void GoForward()
 {
     Off(MOTOR_X);
+    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
     OnFwd(MOTOR_Y, -100);
     //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDFORWARD);
     stdcorrectingspeed = CORSPEEDFORWARD;
@@ -191,6 +197,7 @@ inline void GoForward()
 inline void GoBackward()
 {
     Off(MOTOR_X);
+    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
     OnFwd(MOTOR_Y, 100);
     //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDBACKWARD);
     stdcorrectingspeed = CORSPEEDBACKWARD;
@@ -199,6 +206,7 @@ inline void GoBackward()
 inline void GoNowhere()
 {
     Off(MOTOR_X);
+    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
     Off(MOTOR_Y);
     Off(COMPENSATOR);
     stdcorrectingspeed = 0;
@@ -206,23 +214,25 @@ inline void GoNowhere()
 
 void Go(char speedx, char speedy)
 {
-    int correctingspeedx, correctingspeedy;
-    speedy = -speedy;
-    if(speedx >  100)   speedx           = -100;
-    if(speedx < -100)   speedx           =  100;
-    if(speedy >  100)   speedy           =  100;
-    if(speedy < -100)   speedy           = -100;
+    int correctingspeedx = 0, correctingspeedy = 0;
+    
+    //Take the right correctingspeed
     if(speedx >  0)     correctingspeedx =  CORSPEEDRIGHT;
     if(speedx <  0)     correctingspeedx =  CORSPEEDLEFT;
-    if(speedx == 0)     correctingspeedx =  0;
-    if(speedy >  0)     correctingspeedy =  CORSPEEDBACKWARD;
-    if(speedy <  0)     correctingspeedy =  CORSPEEDFORWARD;
-    if(speedy == 0)     correctingspeedy =  0;
+    if(speedy >  0)     correctingspeedy =  CORSPEEDFORWARD;
+    if(speedy <  0)     correctingspeedy =  CORSPEEDBACKWARD;
     
-    correctingspeedx = correctingspeedx * speedx / 100;
-    correctingspeedy = correctingspeedy * speedy / 100;
+    //Invert for motor polarity
+    speedy = -speedy;
+    speedx = -speedx;
     
+    //Calculate vectorial correctingspeed
+    correctingspeedx = correctingspeedx * abs(speedx) / 100;
+    correctingspeedy = correctingspeedy * abs(speedy) / 100;
+    
+    //Calc total correctingspeed and turn on motors
     OnFwd(MOTOR_X, speedx);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, speedx);
     OnFwd(MOTOR_Y, speedy);
     //if(!correctorenabled) OnFwd(COMPENSATOR, correctingspeedx + correctingspeedy);
     stdcorrectingspeed = correctingspeedx + correctingspeedy;
