@@ -172,7 +172,6 @@ inline void GoLeft()
     OnFwd(MOTOR_X, 100);
     MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
     Off(MOTOR_Y);
-    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDLEFT);
     stdcorrectingspeed = CORSPEEDLEFT;
 }
 
@@ -181,7 +180,6 @@ inline void GoRight()
     OnFwd(MOTOR_X, -100);
     MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
     Off(MOTOR_Y);
-    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDRIGHT);
     stdcorrectingspeed = CORSPEEDRIGHT;
 }
 
@@ -190,7 +188,6 @@ inline void GoForward()
     Off(MOTOR_X);
     MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
     OnFwd(MOTOR_Y, -100);
-    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDFORWARD);
     stdcorrectingspeed = CORSPEEDFORWARD;
 }
 
@@ -199,7 +196,6 @@ inline void GoBackward()
     Off(MOTOR_X);
     MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
     OnFwd(MOTOR_Y, 100);
-    //if(!correctorenabled) OnFwd(COMPENSATOR, CORSPEEDBACKWARD);
     stdcorrectingspeed = CORSPEEDBACKWARD;
 }
 
@@ -234,13 +230,11 @@ void Go(char speedx, char speedy)
     OnFwd(MOTOR_X, speedx);
     MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, speedx);
     OnFwd(MOTOR_Y, speedy);
-    //if(!correctorenabled) OnFwd(COMPENSATOR, correctingspeedx + correctingspeedy);
     stdcorrectingspeed = correctingspeedx + correctingspeedy;
 }
 
 #define CORRECTORISTASK
 
-bool correctorenabled = true;
 mutex corrector;
 int aim;
 
@@ -253,7 +247,6 @@ task Corrector()
         correctingspeed = stdcorrectingspeed - pow(RELCOMPASSVAL - aim, 3) / 5;
         if(correctingspeed > 100) correctingspeed = 100;
         if(correctingspeed < -100) correctingspeed = -100;
-        //if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
         OnFwd(COMPENSATOR, correctingspeed);
         Release(corrector);
         Yield();
