@@ -53,7 +53,7 @@ void Deflect()
     PlayTone(TONE_A3, 500);
 }
 
-void DiagonalDeflect() //WIP
+void CorrectDeflect() //WIP
 {
     TextOut(0, LCD_LINE6, "Deflecting...");
     PlayTone(TONE_A4, 500);
@@ -138,7 +138,6 @@ task Guard()
 task TrackLeft()
 {
     Acquire(corrector);
-    correctorenabled = false;
     while(true)
     {
         if(BALLDIRSTRAIGHT)
@@ -148,9 +147,8 @@ task TrackLeft()
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
             if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
             {
-                if(dist > BALLDISTANCETHRESHOLD) Deflect();
+                if(dist > BALLDISTANCETHRESHOLD) CorrectDeflect();
             }
-            
         }
         else if(BALLDIRUNKNOWN)
         {
@@ -159,7 +157,7 @@ task TrackLeft()
                 if(t0ballunknown == 0) t0ballunknown = CurrentTick();
                 if(CurrentTick() - t0ballunknown > RETURNTHRESHOLD)
                 {
-                    correctorenabled = true;
+                    Release(corrector);
                     while(abs(RELCOMPASSVAL > 5)) Wait(10);
                     ReturnToBeginPos();
                 }
@@ -190,7 +188,6 @@ task TrackLeft()
 
 task TrackRight()
 {
-    correctorenabled = false;
     Acquire(corrector);
     while(true)
     {
@@ -212,7 +209,7 @@ task TrackRight()
                 if(t0ballunknown == 0) t0ballunknown = CurrentTick();
                 if(CurrentTick() - t0ballunknown > RETURNTHRESHOLD)
                 {
-                    correctorenabled = true;
+                    Release(corrector);
                     while(abs(RELCOMPASSVAL > 5)) Wait(10);
                     ReturnToBeginPos();
                 }

@@ -143,7 +143,7 @@ void DrawSensorValues()
 
 //Motors
 /*
- *OUT_A:Fwd=rechts Rev=links
+ *OUT_A:Fwd=links Rev=rechts (Door onbekende redenen anders)
  *OUT_B:Fwd=achteruit Rev=vooruit
  *OUT_C:Fwd=rechtsom Rev=linksom
  *naar rechts: OnFwd(OUT_A, 100); OnFwd(OUT_C, -55);
@@ -242,17 +242,19 @@ void Go(char speedx, char speedy)
 
 bool correctorenabled = true;
 mutex corrector;
+int aim;
 
 task Corrector()
 {
-    int correctingspeed;
+    float correctingspeed;
     while(true)
     {
         Acquire(corrector);
-        correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
-        //if(correctingspeed > 100) correctingspeed = 100;
-        //if(correctingspeed < -100) correctingspeed = -100;
-        if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
+        correctingspeed = stdcorrectingspeed - pow(RELCOMPASSVAL - aim, 3) / 5;
+        if(correctingspeed > 100) correctingspeed = 100;
+        if(correctingspeed < -100) correctingspeed = -100;
+        //if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
+        OnFwd(COMPENSATOR, correctingspeed);
         Release(corrector);
         Yield();
     }
@@ -262,9 +264,9 @@ void Correct()
 {
     static int correctingspeed;
     correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
-    //if(correctingspeed > 100) correctingspeed = 100;
-    //if(correctingspeed < -100) correctingspeed = -100;
-    if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
+    if(correctingspeed > 100) correctingspeed = 100;
+    if(correctingspeed < -100) correctingspeed = -100;
+    OnFwd(COMPENSATOR, correctingspeed);
 }
 
 //Behaviour
