@@ -67,9 +67,9 @@ task Guard()
         {
             t0ballunknown = 0;
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
-            if(CurrentTick() - t0ballstraight > 1500)
+            if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
             {
-                if(dist > BALLDISTANCETHRESHOLD) if(correctorenabled) Deflect();
+                //if(dist > BALLDISTANCETHRESHOLD) Deflect();
             }
             else GoNowhere();
         }
@@ -78,7 +78,7 @@ task Guard()
             GoNowhere();
             t0ballstraight = 0;
             if(t0ballunknown == 0) t0ballunknown = CurrentTick();
-            if(CurrentTick() - t0ballunknown > 2000)
+            if(CurrentTick() - t0ballunknown > RETURNTHRESHOLD)
             {
                 if(abs(RELCOMPASSVAL) < 5);
                 ReturnToBeginPos();
@@ -133,7 +133,7 @@ task TrackLeft()
                 GoNowhere();
                 t0ballstraight = 0;
                 if(t0ballunknown == 0) t0ballunknown = CurrentTick();
-                if(CurrentTick() - t0ballunknown > 2000)
+                if(CurrentTick() - t0ballunknown > RETURNTHRESHOLD)
                 {
                     correctorenabled = true;
                     while(abs(RELCOMPASSVAL > 5)) Wait(10);
@@ -181,7 +181,7 @@ task TrackRight()
                 GoNowhere();
                 t0ballstraight = 0;
                 if(t0ballunknown == 0) t0ballunknown = CurrentTick();
-                if(CurrentTick() - t0ballunknown > 2000)
+                if(CurrentTick() - t0ballunknown > RETURNTHRESHOLD)
                 {
                     correctorenabled = true;
                     while(abs(RELCOMPASSVAL > 5)) Wait(10);
