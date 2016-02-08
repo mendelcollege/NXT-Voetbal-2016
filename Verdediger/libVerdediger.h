@@ -152,7 +152,7 @@ void DrawSensorValues()
  *achteruit: OnFwd(OUT_B, 100); OnFwd(OUT_C, -28);
 */
 
-char stdcorrectingspeed;
+char stdcorrectingspeed = 0;
 
 #define MOTOR_Y OUT_B
 #define MOTOR_X OUT_A
@@ -238,21 +238,38 @@ void Go(char speedx, char speedy)
     stdcorrectingspeed = correctingspeedx + correctingspeedy;
 }
 
-bool correctorenabled;
+#define CORRECTORISTASK
+
+bool correctorenabled = true;
+mutex corrector;
 
 task Corrector()
 {
-    correctorenabled = true;
-    int correctingspeed = 0;
+    int correctingspeed;
     while(true)
     {
+        Acquire(corrector);
         correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
-        if(correctingspeed > 100) correctingspeed = 100;
-        if(correctingspeed < -100) correctingspeed = -100;
+        //if(correctingspeed > 100) correctingspeed = 100;
+        //if(correctingspeed < -100) correctingspeed = -100;
         if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
-        Wait(10);
+        Release(corrector);
+        Yield();
     }
 }
+
+void Correct()
+{
+    static int correctingspeed;
+    correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
+    //if(correctingspeed > 100) correctingspeed = 100;
+    //if(correctingspeed < -100) correctingspeed = -100;
+    if(correctorenabled) OnFwd(COMPENSATOR, correctingspeed);
+}
+
+//Behaviour
+#define RETURNTHRESHOLD 2000
+#define DEFLECTTHRESHOLD 1000
 
 //Initialisation
 void Init()

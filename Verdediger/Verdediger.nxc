@@ -53,6 +53,14 @@ void Deflect()
     PlayTone(TONE_A3, 500);
 }
 
+void DiagonalDeflect() //WIP
+{
+    TextOut(0, LCD_LINE6, "Deflecting...");
+    PlayTone(TONE_A4, 500);
+    PlayTone(TONE_A3, 500);
+}
+
+
 
 task main()
 {
@@ -65,7 +73,6 @@ task main()
 task Guard()
 {
     GoNowhere();
-    correctorenabled = true;
     while(true)
     {
         TextOut(0, LCD_LINE6, "Guarding...");
@@ -77,13 +84,13 @@ task Guard()
         }
         else if(BALLDIRSTRAIGHT)
         {
+            GoNowhere();
             t0ballunknown = 0;
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
             if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
             {
                 //if(dist > BALLDISTANCETHRESHOLD) Deflect();
             }
-            else GoNowhere();
         }
         else if(BALLDIRUNKNOWN)
         {
@@ -124,12 +131,13 @@ task Guard()
                 //ExitTo(TrackRight);
             }
         }
+        Yield();
     }
 }
 
 task TrackLeft()
 {
-    GoNowhere();
+    Acquire(corrector);
     correctorenabled = false;
     while(true)
     {
@@ -138,6 +146,10 @@ task TrackLeft()
             GoNowhere();
             t0ballunknown = 0;
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
+            if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
+            {
+                if(dist > BALLDISTANCETHRESHOLD) Deflect();
+            }
             
         }
         else if(BALLDIRUNKNOWN)
@@ -168,6 +180,7 @@ task TrackLeft()
                 t0ballstraight = 0;
                 if(RELCOMPASSVAL > -5)
                 {
+                    Release(corrector);
                     ExitTo(Guard);
                 }
                 else TurnRight(100);
@@ -177,8 +190,8 @@ task TrackLeft()
 
 task TrackRight()
 {
-    GoNowhere();
     correctorenabled = false;
+    Acquire(corrector);
     while(true)
     {
         if(BALLDIRSTRAIGHT)
@@ -186,6 +199,10 @@ task TrackRight()
             GoNowhere();
             t0ballunknown = 0;
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
+            if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
+            {
+                //if(dist > BALLDISTANCETHRESHOLD) Deflect();
+            }
 
         }
         else if(BALLDIRUNKNOWN)
@@ -216,6 +233,7 @@ task TrackRight()
                 t0ballstraight = 0;
                 if(RELCOMPASSVAL < 5)
                 {
+                    Release(corrector);
                     ExitTo(Guard);
                 }
                 else TurnLeft(100);
