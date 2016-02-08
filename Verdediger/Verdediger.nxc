@@ -166,7 +166,7 @@ task TrackLeft()
         {
                 t0ballunknown = 0;
                 t0ballstraight = 0;
-                if(RELCOMPASSVAL < 5)
+                if(RELCOMPASSVAL > -5)
                 {
                     ExitTo(Guard);
                 }
@@ -214,7 +214,7 @@ task TrackRight()
         {
                 t0ballunknown = 0;
                 t0ballstraight = 0;
-                if(RELCOMPASSVAL > -5)
+                if(RELCOMPASSVAL < 5)
                 {
                     ExitTo(Guard);
                 }
