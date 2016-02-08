@@ -11,12 +11,17 @@ task TrackRight();
 void ReturnToBeginPos()
 {
     TextOut(0, LCD_LINE6, "Returning... ");
+    PlayTone(TONE_E3, 500);
     if(XPos() > 10) GoLeft();
     if(XPos() < -10) GoRight();
     while(abs(XPos()) > 10)
     {
         UpdateIRValues();
-        if(dir != 0) return;
+        if(dir != 0)
+        {
+            PlayTone(TONE_A3, 500);
+            return;
+        }
         Wait(10);
     }
     GoNowhere();
@@ -26,7 +31,11 @@ void ReturnToBeginPos()
     while(abs(YPos()) > 10)
     {
         UpdateIRValues();
-        if(dir != 0) return;
+        if(dir != 0)
+        {
+            PlayTone(TONE_A3, 500);
+            return;
+        }
         Wait(10);
     }
     GoNowhere();
@@ -35,10 +44,13 @@ void ReturnToBeginPos()
 void Deflect()
 {
     TextOut(0, LCD_LINE6, "Deflecting...");
+    PlayTone(TONE_A4, 500);
     GoForward();
     Wait(500);
     GoBackward();
     Wait(500);
+    GoNowhere();
+    PlayTone(TONE_A3, 500);
 }
 
 
