@@ -18,7 +18,7 @@ void BoemBoemBatsiBa()
                 Wait(500);
                 Kick();
                 Wait(500);
-                Off(MOTORALL);
+                GoNowhere();
                 break;
             }
             else
@@ -93,11 +93,12 @@ void BoemBoemBatsiBaTheSequel()
     GoForward(100);
     Wait(500);
     Kick();
+    GoNowhere();
 }
 
 void BasicBitch()
 {
-    int improveddistance [4];
+    int improveddistance[4];
     bool blocked;
     
     //Turn maybe
@@ -170,6 +171,7 @@ void BasicBitch()
             GoForward(100);
             Wait(300);
             Kick();
+            GoNowhere();
         }
         else
         {
@@ -178,6 +180,7 @@ void BasicBitch()
             GoForward(100);
             Wait(300);
             Kick();
+            GoNowhere();
         }
     }
     else
@@ -200,6 +203,7 @@ void BasicBitch()
             GoForward(100);
             Wait(300);
             Kick();
+            GoNowhere();
         }
         else
         {
@@ -208,6 +212,7 @@ void BasicBitch()
             GoForward(100);
             Wait(300);
             Kick();
+            GoNowhere();
         }
     }
     
