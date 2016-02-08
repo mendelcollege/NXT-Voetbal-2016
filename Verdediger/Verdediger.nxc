@@ -53,10 +53,19 @@ void Deflect()
     PlayTone(TONE_A3, 500);
 }
 
-void CorrectDeflect() //WIP
+void CorrectDeflect() //Spreek het uit, het klinkt geweldig, al zeg ik het zelf
 {
     TextOut(0, LCD_LINE6, "Deflecting...");
     PlayTone(TONE_A4, 500);
+    aim = RELCOMPASSVAL;
+    Release(corrector);
+    GoForward();
+    Wait(500);
+    GoBackward();
+    Wait(500);
+    GoNowhere();
+    Acquire(corrector);
+    aim = 0;
     PlayTone(TONE_A3, 500);
 }
 
