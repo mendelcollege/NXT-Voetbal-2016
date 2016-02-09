@@ -132,6 +132,7 @@ void BasicBitch()
         improveddistance[RIGHT] = distance[RIGHT];
         improveddistance[LEFT] = STADIUMWIDTH - distance[RIGHT];
     }
+    //Go to middle
     if(improveddistance[LEFT] < improveddistance[RIGHT])
     {
         TurnTo(-60,75);
@@ -139,9 +140,6 @@ void BasicBitch()
         if(!BALLPOSSESSION) return;
         GoRB(100);
         while(STADIUMWIDTH / 2 < distance[RIGHT]);
-        TurnTo(0,75);
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
     }
     else
     {
@@ -150,10 +148,12 @@ void BasicBitch()
         if(!BALLPOSSESSION) return;
         GoLB(100);
         while(STADIUMWIDTH / 2 < distance[LEFT]);
-        TurnTo(0,75);
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
     }
+    //Turn Forward
+    TurnTo(0,75);
+    UpdateIRValues();
+    if(!BALLPOSSESSION) return;
+    //If close to goal, go backward and kick
     if(distance[FORWARD] < 20)
     {
         while(CurrentTick() - tlastkick < RECHARGINGTIME - 1300)
@@ -183,6 +183,7 @@ void BasicBitch()
             GoNowhere();
         }
     }
+    //If far from goal, go forward up until goal then kick
     else
     {
         GoForward(100);
