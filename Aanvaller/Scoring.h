@@ -44,12 +44,14 @@ void BoemBoemBatsiBaTheSequel()
     {
         if (distance[i] < 10) blocked = true;
     }
-    PlayTone(TONE_G3, 500);
-    if(blocked) TurnTo(RELCOMPASSVAL + 45, 75);
-    Wait(1000);
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
-    
+    if(blocked)
+    {
+        PlayTone(TONE_G3, 500);
+        TurnTo(RELCOMPASSVAL + 45, 75);
+        Wait(1000);
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+    }
     //Check Readings
     if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));
     {
@@ -109,11 +111,14 @@ void BasicBitch()
     {
         if (distance[i] < 10) blocked = true;
     }
-    PlayTone(TONE_G3, 500);
-    if(blocked) TurnTo(RELCOMPASSVAL + 45, 75);
-    Wait(1000);
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
+    if(blocked)
+    {
+        PlayTone(TONE_G3, 500);
+        TurnTo(RELCOMPASSVAL + 45, 75);
+        Wait(1000);
+        UpdateIRValues();
+        if(!BALLPOSSESSION) return;
+    }
 
     //Check Readings
     if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));

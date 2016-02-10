@@ -213,18 +213,8 @@ safecall int CompassVal()
 safecall int RelCompassVal()
 {
     int tmp = RAWCOMPASSVAL - compassbeginval;
-    if(tmp <= 180 && tmp >= -179)
-    {
-        return tmp;
-    }
-    if(tmp > 180)
-    {
-        return tmp - 360;
-    }
-    if(tmp <= -180)
-    {
-        return tmp + 360;
-    }
+    while(tmp <= -180) tmp += 360;
+    while(tmp >   180) tmp -= 360;
 }
 
 void TurnTo(int turn, char speed)
@@ -258,29 +248,65 @@ void TurnTo(int turn, char speed)
 
 byte distance[4];
 const int dirdeg[4] = {0, 90, 180, 270};
-bool distcheckerenabled = true;
+//mutex distchecker;
+bool usrotate = true;
+char usrotation = 0;
+
+void SetUS(int direction)
+{
+    MMX_Run_Tachometer(MMXPORT,
+                           0x06,
+                           MMX_Motor_1,
+                           MMX_Direction_Forward,
+                           100,
+                           direction,
+                           false,  //Relative
+                           true,   //Wait for completion.
+                           MMX_Next_Action_Brake);
+}
+
+//Kijk uit voor ruzie met DistChecker
+//Laat maar, gebruik nu toch ander systeem
+//Nu maar uitkijken dat je even wacht met metingen, motor heeft tijd nodig
+
+inline void PointUS(char rotation)
+{
+    usrotate = false;
+    usrotation = rotation;
+    //Wacht voor een seconde voor motor, moet bij function call
+}
+
+inline void ResetUS()
+{
+    usrotate = true;
+}
 
 task DistChecker()
 {
     int abspos;
-    int i = 0;
     while(true)
     {
-        abspos  = dirdeg[i] - RELCOMPASSVAL;
-        if(distcheckerenabled)
-            MMX_Run_Tachometer(MMXPORT,
-                               0x06,
-                               MMX_Motor_1,
-                               MMX_Direction_Forward,
-                               100,
-                               abspos,
-                               false,  //Relative
-                               true,   //Wait for completion.
-                               MMX_Next_Action_Brake);
-        MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
-        distance[i] = USVAL;
-        i++;
-        if(i == 4) i = 0;
+        //Acquire(distchecker);
+        abspos  = dirdeg[usrotation] - RELCOMPASSVAL;
+        while(abspos <= -180) abspos += 360;
+        while(abspos >   180) abspos -= 360;
+        MMX_Run_Tachometer(MMXPORT,
+                           0x06,
+                           MMX_Motor_1,
+                           MMX_Direction_Forward,
+                           100,
+                           abspos,
+                           false,  //Relative
+                           true,   //Wait for completion.
+                           MMX_Next_Action_Brake);
+        //MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+        distance[usrotation] = USVAL;
+        if(usrotate)
+        {
+            usrotation++;
+            if(usrotation == 4) usrotation = 0;
+        }
+        //Release(distchecker);
         Yield();
     }
 }
