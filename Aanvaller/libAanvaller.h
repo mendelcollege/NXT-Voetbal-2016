@@ -215,6 +215,7 @@ safecall int RelCompassVal()
     int tmp = RAWCOMPASSVAL - compassbeginval;
     while(tmp <= -180) tmp += 360;
     while(tmp >   180) tmp -= 360;
+    return tmp;
 }
 
 void TurnTo(int turn, char speed)

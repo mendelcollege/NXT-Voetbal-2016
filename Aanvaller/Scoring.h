@@ -223,3 +223,7 @@ void BasicBitch()
     }
     
 }
+
+void SneakyBeaky()
+{
+}
