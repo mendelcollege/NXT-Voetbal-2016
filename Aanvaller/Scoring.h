@@ -5,7 +5,7 @@ void BoemBoemBatsiBa()
     {
         UpdateIRValues();
         TextOut(0, LCD_LINE7, "Richten...", DRAW_OPT_CLEAR_EOL);
-        if(!BALLPOSSESSION) break;
+        if(!BALLPOSSESSION) return;
         if(RELCOMPASSVAL > 5) TurnLeft(75);
         if(RELCOMPASSVAL < -5) TurnRight(75);
         if(abs(RELCOMPASSVAL) < 5)
@@ -19,7 +19,7 @@ void BoemBoemBatsiBa()
                 Kick();
                 Wait(500);
                 GoNowhere();
-                break;
+                return;
             }
             else
             {
@@ -143,6 +143,7 @@ void BasicBitch()
         TurnTo(-60,75);
         UpdateIRValues();
         if(!BALLPOSSESSION) return;
+        PointUS(RIGHT);
         GoRB(100);
         while(STADIUMWIDTH / 2 < distance[RIGHT]);
     }
@@ -151,6 +152,7 @@ void BasicBitch()
         TurnTo(60,75);
         UpdateIRValues();
         if(!BALLPOSSESSION) return;
+        PointUS(LEFT);
         GoLB(100);
         while(STADIUMWIDTH / 2 < distance[LEFT]);
     }
@@ -158,6 +160,7 @@ void BasicBitch()
     TurnTo(0,75);
     UpdateIRValues();
     if(!BALLPOSSESSION) return;
+    PointUS(FORWARD);
     //If close to goal, go backward and kick
     if(distance[FORWARD] < 20)
     {
@@ -221,9 +224,9 @@ void BasicBitch()
             GoNowhere();
         }
     }
-    
 }
 
 void SneakyBeaky()
 {
+
 }

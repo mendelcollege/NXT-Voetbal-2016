@@ -137,7 +137,7 @@ void Kick()
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
 #define LIGHTVAL SENSOR_3
-#define WHITE 55 //?
+#define WHITE 30 //?
 #define BLACK 40 //?
 #define USVAL SensorUS(S4)
 
