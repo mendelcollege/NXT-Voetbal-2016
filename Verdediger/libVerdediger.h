@@ -159,10 +159,10 @@ char stdcorrectingspeed = 0;
 #define COMPENSATOR OUT_C
 #define MOTOR_ALL OUT_ABC
 
-#define CORSPEEDLEFT 30
-#define CORSPEEDRIGHT -30
-#define CORSPEEDFORWARD 40
-#define CORSPEEDBACKWARD -40
+#define CORSPEEDLEFT 40
+#define CORSPEEDRIGHT -35
+#define CORSPEEDFORWARD 20
+#define CORSPEEDBACKWARD -20
 
 #define TurnRight(speed) OnFwd(COMPENSATOR, speed)
 #define TurnLeft(speed) OnFwd(COMPENSATOR, (-speed))
@@ -186,7 +186,7 @@ inline void GoRight()
 inline void GoForward()
 {
     Off(MOTOR_X);
-    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
+    MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
     OnFwd(MOTOR_Y, -100);
     stdcorrectingspeed = CORSPEEDFORWARD;
 }
@@ -194,7 +194,7 @@ inline void GoForward()
 inline void GoBackward()
 {
     Off(MOTOR_X);
-    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
+    MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
     OnFwd(MOTOR_Y, 100);
     stdcorrectingspeed = CORSPEEDBACKWARD;
 }
@@ -202,13 +202,13 @@ inline void GoBackward()
 inline void GoNowhere()
 {
     Off(MOTOR_X);
-    MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Brake);
+    MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
     Off(MOTOR_Y);
-    Off(COMPENSATOR);
+    //Off(COMPENSATOR);
     stdcorrectingspeed = 0;
 }
 
-void Go(char speedx, char speedy)
+void Go(char speedx, char speedy) //Positive = Right Forward Negative = Left, Rev
 {
     int correctingspeedx = 0, correctingspeedy = 0;
     
@@ -236,20 +236,21 @@ void Go(char speedx, char speedy)
 #define CORRECTORISTASK
 
 mutex corrector;
-int aim;
+int aim = 0;
 
 task Corrector()
 {
-    float correctingspeed;
+    int correctingspeed;
     while(true)
     {
-        Acquire(corrector);
-        correctingspeed = stdcorrectingspeed - pow(RELCOMPASSVAL - aim, 3) / 5;
+        //Acquire(corrector);
+        //correctingspeed = stdcorrectingspeed - pow((RELCOMPASSVAL - aim), 3) / 5;
+        correctingspeed = stdcorrectingspeed - (RELCOMPASSVAL - aim) * 3;
         if(correctingspeed > 100) correctingspeed = 100;
         if(correctingspeed < -100) correctingspeed = -100;
         OnFwd(COMPENSATOR, correctingspeed);
-        Release(corrector);
-        Yield();
+        //Release(corrector);
+        //Yield();
     }
 }
 
@@ -273,6 +274,7 @@ void Init()
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorLowspeed(USSENSORLEFTPORT);
     SetSensorLowspeed(USSENSORBACKPORT);
+    MMX_Init(MMXPORT, 0x06, MMX_Profile_RCX_Motors);
     compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
     start Corrector;
     y0 = USBACKVAL;
