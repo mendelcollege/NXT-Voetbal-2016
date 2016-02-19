@@ -33,27 +33,14 @@ void BoemBoemBatsiBaTheSequel()
 {
     int improveddistance[4];
     int aim;
-    bool blocked;
     float temp;
 
     //Turn maybe
     GoNowhere();
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
-    for(int i = 0; i < 4; i++)
-    {
-        if (distance[i] < 10) blocked = true;
-    }
-    if(blocked)
-    {
-        PlayTone(TONE_G3, 500);
-        TurnTo(RELCOMPASSVAL + 45, 75);
-        Wait(1000);
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
-    }
+    BallCheckReturn();
+    Deblock();
     //Check Readings
-    if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));
+    if(!aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10))
     {
         PlayTone(TONE_A4, 500);
     }
@@ -80,8 +67,7 @@ void BoemBoemBatsiBaTheSequel()
 
     //Aim
     TurnTo(aim, 75);
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
+    BallCheckReturn();
 
     //Kick
     while(CurrentTick() - tlastkick < RECHARGINGTIME - 500)
@@ -89,8 +75,7 @@ void BoemBoemBatsiBaTheSequel()
         TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
         PlayTone(TONE_A7, 50);
     }
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
+    BallCheckReturn();
     TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
     GoForward(100);
     Wait(500);
@@ -101,27 +86,14 @@ void BoemBoemBatsiBaTheSequel()
 void BasicBitch()
 {
     int improveddistance[4];
-    bool blocked;
     
     //Turn maybe
     GoNowhere();
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
-    for(int i = 0; i < 4; i++)
-    {
-        if (distance[i] < 10) blocked = true;
-    }
-    if(blocked)
-    {
-        PlayTone(TONE_G3, 500);
-        TurnTo(RELCOMPASSVAL + 45, 75);
-        Wait(1000);
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
-    }
-
+    BallCheckReturn();
+    Deblock();
+    
     //Check Readings
-    if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10));
+    if(!aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10))
     {
         PlayTone(TONE_A4, 500);
     }
@@ -141,8 +113,7 @@ void BasicBitch()
     if(improveddistance[LEFT] < improveddistance[RIGHT])
     {
         TurnTo(-60,75);
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
+        BallCheckReturn();
         PointUS(RIGHT);
         GoRB(100);
         while(STADIUMWIDTH / 2 < distance[RIGHT]);
@@ -150,17 +121,16 @@ void BasicBitch()
     else
     {
         TurnTo(60,75);
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
+        BallCheckReturn();
         PointUS(LEFT);
         GoLB(100);
         while(STADIUMWIDTH / 2 < distance[LEFT]);
     }
     //Turn Forward
     TurnTo(0,75);
-    UpdateIRValues();
-    if(!BALLPOSSESSION) return;
+    BallCheckReturn();
     PointUS(FORWARD);
+    Wait(500); //?
     //If close to goal, go backward and kick
     if(distance[FORWARD] < 20)
     {
@@ -169,8 +139,7 @@ void BasicBitch()
             TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
             PlayTone(TONE_A7, 50);
         }
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
+        BallCheckReturn();
         TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
         if(Random(2) == 1)
         {
@@ -202,8 +171,7 @@ void BasicBitch()
             TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
             PlayTone(TONE_A7, 50);
         }
-        UpdateIRValues();
-        if(!BALLPOSSESSION) return;
+        BallCheckReturn();
         TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
         if(Random(2) == 1)
         {
@@ -228,5 +196,31 @@ void BasicBitch()
 
 void SneakyBeaky()
 {
-
+    char route;
+    Deblock();
+    //Decide if right or left
+    //No robot in the way
+    if(aproxequal(distance[LEFT] + distance[RIGHT], STADIUMWIDTH, 10))
+    {
+        if(distance[LEFT] > distance[RIGHT])
+        {
+            route = RIGHT;
+        }
+        else route = LEFT;
+    }
+    //Robot in the way!!!!!
+    else
+    {
+        if(distance[LEFT] > distance[RIGHT])
+        {
+            route = LEFT;
+        }
+        else route = RIGHT;
+    }
+    if(route == LEFT)
+    {
+    }
+    else
+    {
+    }
 }

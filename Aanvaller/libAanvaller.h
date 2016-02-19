@@ -149,6 +149,7 @@ void Kick()
 #define POSSESSIONTHRESHOLD 255
 #define BALLCLOSE 130
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
+#define BallCheckReturn() UpdateIRValues(); if(!BALLPOSSESSION) return
 
 int dir;
 int dist;
@@ -253,7 +254,7 @@ const int dirdeg[4] = {0, 90, 180, 270};
 bool usrotate = true;
 char usrotation = 0;
 
-void SetUS(int direction)
+inline void SetUS(int direction)
 {
     MMX_Run_Tachometer(MMXPORT,
                            0x06,
@@ -280,6 +281,21 @@ inline void PointUS(char rotation)
 inline void ResetUS()
 {
     usrotate = true;
+}
+
+void Deblock()
+{
+    for(int i = 0; i < 4; i++)
+    {
+        if (distance[i] < 10)
+        {
+            PlayTone(TONE_G3, 500);
+            TurnTo(RELCOMPASSVAL + 45, 75);
+            PointUS(i);
+            Wait(1000);
+            ResetUS();
+        }
+    }
 }
 
 task DistChecker()
