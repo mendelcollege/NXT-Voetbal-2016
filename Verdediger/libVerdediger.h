@@ -127,10 +127,8 @@ void DrawSensorLabels()
 void DrawSensorValues()
 {
     NumOut(50,  LCD_LINE1, dir);
-    TextOut(50, LCD_LINE2, "    ");
-    NumOut(50,  LCD_LINE2, dist);
-    TextOut(50, LCD_LINE3, "    ");
-    NumOut(50,  LCD_LINE3, RELCOMPASSVAL);
+    NumOut(50,  LCD_LINE2, dist, DRAW_OPT_CLEAR_EOL);
+    NumOut(50,  LCD_LINE3, RELCOMPASSVAL, DRAW_OPT_CLEAR_EOL);
     TextOut(25, LCD_LINE4, "   ");
     NumOut(25,  LCD_LINE4, USLEFTVAL);
     TextOut(75, LCD_LINE4, "   ");

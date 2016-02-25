@@ -204,10 +204,8 @@ safecall int CompassVal()
     if(RAWCOMPASSVAL < 0)
     {
         return RAWCOMPASSVAL - compassbeginval + 360;
-    }
-    else
-    {
-        return RAWCOMPASSVAL - compassbeginval;
+  return "value";
+    return RAWCOMPASSVAL - compassbeginval;
     }
 }
 
@@ -251,6 +249,7 @@ void TurnTo(int turn, char speed)
 byte distance[4];
 const int dirdeg[4] = {0, 90, 180, 270};
 //mutex distchecker;
+mutex MMX;
 bool usrotate = true;
 char usrotation = 0;
 
@@ -300,6 +299,7 @@ void Deblock()
 
 task DistChecker()
 {
+    int tlastrotation = 0;
     int abspos;
     while(true)
     {
@@ -307,6 +307,7 @@ task DistChecker()
         abspos  = dirdeg[usrotation] - RELCOMPASSVAL;
         while(abspos <= -180) abspos += 360;
         while(abspos >   180) abspos -= 360;
+        Acquire(MMX);
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
@@ -317,14 +318,19 @@ task DistChecker()
                            true,   //Wait for completion.
                            MMX_Next_Action_Brake);
         //MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+        NumOut(0,LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1), DRAW_OPT_CLEAR_EOL);
+        NumOut(40,LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
+        Release(MMX);
         distance[usrotation] = USVAL;
+        //if(CurrentTick() - tlastrotation > 1000)
         if(usrotate)
         {
-            usrotation++;
-            if(usrotation == 4) usrotation = 0;
+
+                usrotation++;
+                if(usrotation == 4) usrotation = 0;
+                tlastrotation = CurrentTick();
+                Wait(500);
         }
-        //Release(distchecker);
-        Yield();
     }
 }
 
@@ -354,7 +360,7 @@ void Init()
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorType(LIGHTSENSORPORT, SENSOR_TYPE_LIGHT);
     SetSensorMode(LIGHTSENSORPORT, SENSOR_MODE_PERCENT);
-    SetSensorLowspeed(MMXPORT);
+    //SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     compassbeginval = RAWCOMPASSVAL;
     DrawSensorLabels();

@@ -1,0 +1,32 @@
+#include "NXTMMX-lib.h"
+
+#define MMXPORT S4
+
+task tachodisplay()
+{
+    while(true)
+    {
+        NumOut(0,LCD_LINE2, MMX_ReadTachometerPosition(MMXPORT, 0x06,
+               MMX_Motor_1), DRAW_OPT_CLEAR_EOL);
+        Wait(50);
+    }
+}
+
+task main()
+{
+    start tachodisplay;
+    MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
+    Wait(2000);
+    MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
+    MMX_Run_Tachometer(MMXPORT,
+                           0x06,
+                           MMX_Motor_1,
+                           MMX_Direction_Forward,
+                           100,
+                           0,
+                           false,  //Relative
+                           true,   //Wait for completion.
+                           MMX_Next_Action_Brake);
+    //StopAllTasks();
+}

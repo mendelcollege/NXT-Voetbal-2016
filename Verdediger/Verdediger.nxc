@@ -10,7 +10,7 @@ task TrackRight();
 
 void ReturnToBeginPos()
 {
-    TextOut(0, LCD_LINE6, "Returning... ");
+    TextOut(0, LCD_LINE6, "Returning...", DRAW_OPT_CLEAR_EOL);
     PlayTone(TONE_E3, 500);
     if(XPos() > 10) GoLeft();
     if(XPos() < -10) GoRight();
@@ -43,7 +43,7 @@ void ReturnToBeginPos()
 
 void Deflect()
 {
-    TextOut(0, LCD_LINE6, "Deflecting...");
+    TextOut(0, LCD_LINE6, "Deflecting...", DRAW_OPT_CLEAR_EOL);
     PlayTone(TONE_A4, 500);
     GoForward();
     Wait(500);
@@ -55,7 +55,7 @@ void Deflect()
 
 void CorrectDeflect() //Spreek het uit, het klinkt geweldig, al zeg ik het zelf
 {
-    TextOut(0, LCD_LINE6, "Deflecting...");
+    TextOut(0, LCD_LINE6, "Deflecting...", DRAW_OPT_CLEAR_EOL);
     PlayTone(TONE_A4, 500);
     aim = RELCOMPASSVAL;
     Release(corrector);
@@ -84,7 +84,7 @@ task Guard()
     GoNowhere();
     while(true)
     {
-        TextOut(0, LCD_LINE6, "Guarding...");
+        TextOut(0, LCD_LINE6, "Guarding...", DRAW_OPT_CLEAR_EOL);
         UpdateIRValues();
         DrawSensorValues();
         if(USBACKVAL < 20)
