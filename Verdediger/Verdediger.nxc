@@ -46,23 +46,23 @@ void Deflect()
     TextOut(0, LCD_LINE6, "Deflecting...", DRAW_OPT_CLEAR_EOL);
     PlayTone(TONE_A4, 500);
     GoForward();
-    Wait(500);
+    Wait(2000);
     GoBackward();
-    Wait(500);
+    Wait(2000);
     GoNowhere();
     PlayTone(TONE_A3, 500);
 }
 
 void CorrectDeflect() //Spreek het uit, het klinkt geweldig, al zeg ik het zelf
 {
-    TextOut(0, LCD_LINE6, "Deflecting...", DRAW_OPT_CLEAR_EOL);
+    TextOut(0, LCD_LINE6, "CorectDeflect...", DRAW_OPT_CLEAR_EOL);
     PlayTone(TONE_A4, 500);
     aim = RELCOMPASSVAL;
     Release(corrector);
     GoForward();
-    Wait(500);
+    Wait(2000);
     GoBackward();
-    Wait(500);
+    Wait(2000);
     GoNowhere();
     Acquire(corrector);
     aim = 0;
@@ -91,6 +91,10 @@ task Guard()
         {
             GoForward();
         }
+        else if(USBACKVAL > 40)
+        {
+            GoBackward();
+        }
         else if(BALLDIRSTRAIGHT)
         {
             GoNowhere();
@@ -98,7 +102,7 @@ task Guard()
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
             if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
             {
-                //if(dist > BALLDISTANCETHRESHOLD) Deflect();
+                if(dist > BALLDISTANCETHRESHOLD) Deflect();
             }
         }
         else if(BALLDIRUNKNOWN)
@@ -123,7 +127,7 @@ task Guard()
             else
             {
                 GoNowhere();
-                //ExitTo(TrackLeft);
+                ExitTo(TrackLeft);
             }
         }
         else if(BALLDIRRIGHT)
@@ -137,7 +141,7 @@ task Guard()
             else
             {
                 GoNowhere();
-                //ExitTo(TrackRight);
+                ExitTo(TrackRight);
             }
         }
         Yield();
@@ -149,6 +153,9 @@ task TrackLeft()
     Acquire(corrector);
     while(true)
     {
+        TextOut(0, LCD_LINE6, "TrackLeft...", DRAW_OPT_CLEAR_EOL);
+        UpdateIRValues();
+        DrawSensorValues();
         if(BALLDIRSTRAIGHT)
         {
             GoNowhere();
@@ -175,9 +182,9 @@ task TrackLeft()
         {
                 t0ballunknown = 0;
                 t0ballstraight = 0;
-                if(RELCOMPASSVAL > -90)
+                if(RELCOMPASSVAL > -135)
                 {
-                    TurnLeft(100);
+                    TurnLeft(75);
                 }
                 else GoNowhere();
         }
@@ -190,7 +197,7 @@ task TrackLeft()
                     Release(corrector);
                     ExitTo(Guard);
                 }
-                else TurnRight(100);
+                else TurnRight(75);
         }
     }
 }
@@ -200,6 +207,9 @@ task TrackRight()
     Acquire(corrector);
     while(true)
     {
+        TextOut(0, LCD_LINE6, "TrackRight...", DRAW_OPT_CLEAR_EOL);
+        UpdateIRValues();
+        DrawSensorValues();
         if(BALLDIRSTRAIGHT)
         {
             GoNowhere();
@@ -227,9 +237,9 @@ task TrackRight()
         {
                 t0ballunknown = 0;
                 t0ballstraight = 0;
-                if(RELCOMPASSVAL < 90)
+                if(RELCOMPASSVAL < 135)
                 {
-                    TurnRight(100);
+                    TurnRight(75);
                 }
                 else GoNowhere();
         }
@@ -242,7 +252,7 @@ task TrackRight()
                     Release(corrector);
                     ExitTo(Guard);
                 }
-                else TurnLeft(100);
+                else TurnLeft(75);
         }
     }
 }

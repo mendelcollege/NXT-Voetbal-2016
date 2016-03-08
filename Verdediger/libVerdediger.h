@@ -34,7 +34,7 @@ inline int YPos()
 #define BALLDIRRIGHT (dir < 5)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define BALLDISTANCETHRESHOLD 200
+#define BALLDISTANCETHRESHOLD 150
 
 int dir;
 int dist;
@@ -158,7 +158,7 @@ char stdcorrectingspeed = 0;
 #define MOTOR_ALL OUT_ABC
 
 #define CORSPEEDLEFT 40
-#define CORSPEEDRIGHT -35
+#define CORSPEEDRIGHT -30
 #define CORSPEEDFORWARD 20
 #define CORSPEEDBACKWARD -20
 
@@ -202,7 +202,7 @@ inline void GoNowhere()
     Off(MOTOR_X);
     MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
     Off(MOTOR_Y);
-    //Off(COMPENSATOR);
+    Off(COMPENSATOR);
     stdcorrectingspeed = 0;
 }
 
@@ -241,14 +241,14 @@ task Corrector()
     int correctingspeed;
     while(true)
     {
-        //Acquire(corrector);
+        Acquire(corrector);
         //correctingspeed = stdcorrectingspeed - pow((RELCOMPASSVAL - aim), 3) / 5;
         correctingspeed = stdcorrectingspeed - (RELCOMPASSVAL - aim) * 3;
         if(correctingspeed > 100) correctingspeed = 100;
         if(correctingspeed < -100) correctingspeed = -100;
         OnFwd(COMPENSATOR, correctingspeed);
-        //Release(corrector);
-        //Yield();
+        Release(corrector);
+        Yield();
     }
 }
 
@@ -263,7 +263,7 @@ void Correct()
 
 //Behaviour
 #define RETURNTHRESHOLD 2000
-#define DEFLECTTHRESHOLD 1000
+#define DEFLECTTHRESHOLD 500
 
 //Initialisation
 void Init()

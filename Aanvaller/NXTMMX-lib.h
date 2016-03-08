@@ -258,7 +258,7 @@ bool MMX_IsTachoDone(byte port, byte addr, byte motor_number)
 
 void MMX_WaitUntilTachoDone(byte port, byte addr, byte motor_number)
 {
-    while ( MMX_IsTachoDone(port, addr, motor_number) != true ) Yield();        //Modified Wait(50) -> Yield()
+    while ( MMX_IsTachoDone(port, addr, motor_number) != true ) Wait(50);       //Modified Wait(50) -> Yield()
 }
 
 int MMX_SendCommand(byte port, byte addr, byte cmd)

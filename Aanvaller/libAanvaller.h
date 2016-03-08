@@ -249,7 +249,6 @@ void TurnTo(int turn, char speed)
 byte distance[4];
 const int dirdeg[4] = {0, 90, 180, 270};
 //mutex distchecker;
-mutex MMX;
 bool usrotate = true;
 char usrotation = 0;
 
@@ -299,7 +298,7 @@ void Deblock()
 
 task DistChecker()
 {
-    int tlastrotation = 0;
+    unsigned long tlastrotation = 0;
     int abspos;
     while(true)
     {
@@ -307,29 +306,28 @@ task DistChecker()
         abspos  = dirdeg[usrotation] - RELCOMPASSVAL;
         while(abspos <= -180) abspos += 360;
         while(abspos >   180) abspos -= 360;
-        Acquire(MMX);
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
                            MMX_Direction_Forward,
-                           100,
+                           60,
                            abspos,
                            false,  //Relative
-                           true,   //Wait for completion.
+                           false,   //Wait for completion.
                            MMX_Next_Action_Brake);
         //MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
-        NumOut(0,LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1), DRAW_OPT_CLEAR_EOL);
-        NumOut(40,LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
-        Release(MMX);
+        NumOut(0,LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1) - abspos, DRAW_OPT_CLEAR_EOL);
+        NumOut(50,LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
         distance[usrotation] = USVAL;
-        //if(CurrentTick() - tlastrotation > 1000)
-        if(usrotate)
+        Wait(1000);
+        if(CurrentTick() - tlastrotation > 1000)
         {
-
-                usrotation++;
-                if(usrotation == 4) usrotation = 0;
-                tlastrotation = CurrentTick();
-                Wait(500);
+            if(usrotate)
+            {
+                    usrotation++;
+                    if(usrotation == 4) usrotation = 0;
+                    tlastrotation = CurrentTick();
+            }
         }
     }
 }
@@ -362,6 +360,16 @@ void Init()
     SetSensorMode(LIGHTSENSORPORT, SENSOR_MODE_PERCENT);
     //SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
+    MMX_SetPerformanceParameters(S1, 0x06,
+                                 4500, //int KP_tacho 5000
+                                 0, //int KI_tacho 0
+                                 380, //int KD_tacho 35000
+                                 15000, //int KP_speed
+                                 300, //int KI_speed
+                                 7500, //int KD_speed
+                                 127, //byte pass_count
+                                 1 //byte tolerance
+                                );
     compassbeginval = RAWCOMPASSVAL;
     DrawSensorLabels();
     start DistChecker;
