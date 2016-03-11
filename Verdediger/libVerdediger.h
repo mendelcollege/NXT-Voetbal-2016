@@ -157,8 +157,8 @@ char stdcorrectingspeed = 0;
 #define COMPENSATOR OUT_C
 #define MOTOR_ALL OUT_ABC
 
-#define CORSPEEDLEFT 40
-#define CORSPEEDRIGHT -30
+#define CORSPEEDLEFT -70
+#define CORSPEEDRIGHT 80
 #define CORSPEEDFORWARD 20
 #define CORSPEEDBACKWARD -20
 
