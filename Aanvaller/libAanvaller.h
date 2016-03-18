@@ -204,8 +204,10 @@ safecall int CompassVal()
     if(RAWCOMPASSVAL < 0)
     {
         return RAWCOMPASSVAL - compassbeginval + 360;
-  return "value";
-    return RAWCOMPASSVAL - compassbeginval;
+    }
+    else
+    {
+        return RAWCOMPASSVAL - compassbeginval;
     }
 }
 
@@ -310,16 +312,16 @@ task DistChecker()
                            0x06,
                            MMX_Motor_1,
                            MMX_Direction_Forward,
-                           60,
+                           100,
                            abspos,
                            false,  //Relative
                            false,   //Wait for completion.
                            MMX_Next_Action_Brake);
-        //MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+                           Wait(1000);
         NumOut(0,LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1) - abspos, DRAW_OPT_CLEAR_EOL);
         NumOut(50,LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
         distance[usrotation] = USVAL;
-        Wait(1000);
+        Wait(25);
         if(CurrentTick() - tlastrotation > 1000)
         {
             if(usrotate)
@@ -360,6 +362,7 @@ void Init()
     SetSensorMode(LIGHTSENSORPORT, SENSOR_MODE_PERCENT);
     //SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
+    /*
     MMX_SetPerformanceParameters(S1, 0x06,
                                  4500, //int KP_tacho 5000
                                  0, //int KI_tacho 0
@@ -370,6 +373,7 @@ void Init()
                                  127, //byte pass_count
                                  1 //byte tolerance
                                 );
+    */
     compassbeginval = RAWCOMPASSVAL;
     DrawSensorLabels();
     start DistChecker;

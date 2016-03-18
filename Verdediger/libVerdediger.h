@@ -9,6 +9,7 @@
 
 //Sensor value aliases
 #define UpdateIRValues() HTEnhancedIRSeekerV2(IRSEEKERPORT, dir, dist)
+//#define UpdateIRValues() IR()
 #define RAWCOMPASSVAL SensorHTCompass(S2)
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
@@ -39,7 +40,19 @@ inline int YPos()
 int dir;
 int dist;
 
-void HTEnhancedIRSeekerV2(const byte  port, int &dir = dir, int &strength = dist)
+void IR()
+{
+    byte s1, s3, s5, s7, s9; int i;
+    dist = 0;
+    ReadSensorHTIRSeeker2AC(IRSEEKERPORT, dir, s1, s3, s5, s7, s9);
+    if(s1 > dist) dist = s1;
+    if(s3 > dist) dist = s3;
+    if(s5 > dist) dist = s5;
+    if(s7 > dist) dist = s7;
+    if(s9 > dist) dist = s9;
+}
+
+void HTEnhancedIRSeekerV2(const byte  port, int &direction = dir, int &strength = dist)
 {
   int cResp;
   byte cmdBuf[] = {0x10, 0x43};
@@ -158,7 +171,7 @@ char stdcorrectingspeed = 0;
 #define MOTOR_ALL OUT_ABC
 
 #define CORSPEEDLEFT -70
-#define CORSPEEDRIGHT 80
+#define CORSPEEDRIGHT 70
 #define CORSPEEDFORWARD 20
 #define CORSPEEDBACKWARD -20
 
