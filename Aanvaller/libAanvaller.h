@@ -142,8 +142,8 @@ void Kick()
 #define USVAL SensorUS(S4)
 
 //IRBall
-#define BALLDIRLEFT (dir > 5)
-#define BALLDIRRIGHT (dir < 5 && dir != 0)
+#define BALLDIRLEFT (dir < 5)
+#define BALLDIRRIGHT (dir > 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
 #define POSSESSIONTHRESHOLD 255

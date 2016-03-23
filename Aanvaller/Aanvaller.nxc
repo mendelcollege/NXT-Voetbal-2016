@@ -89,14 +89,14 @@ task main()
                 if(dist <= BALLCLOSE) GoForward(100);
             }
         }
-        else if(dir < 5)
+        else if(dir > 5)
         {
             lastballstate = dir;
-            if(dir < 3)
+            if(dir > 7)
             {
                 TurnRight(50);
             }
-            else if(dir == 3)
+            else if(dir == 7)
             {
                 TurnRight(40);
             }
@@ -109,14 +109,14 @@ task main()
                 else TurnRight(50);
             }
         }
-        else if(dir > 5)
+        else if(dir < 5)
         {
             lastballstate = dir;
-            if(dir > 7)
+            if(dir < 3)
             {
                 TurnLeft(100);
             }
-            else if(dir == 7)
+            else if(dir == 3)
             {
                 TurnLeft(50);
             }
