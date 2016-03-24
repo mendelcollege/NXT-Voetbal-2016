@@ -312,17 +312,15 @@ task DistChecker()
                            0x06,
                            MMX_Motor_1,
                            MMX_Direction_Forward,
-                           100,
+                           60,
                            abspos,
                            false,  //Relative
-                           false,   //Wait for completion.
+                           true,   //Wait for completion.
                            MMX_Next_Action_Brake);
-                           Wait(1000);
         NumOut(0,LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1) - abspos, DRAW_OPT_CLEAR_EOL);
         NumOut(50,LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
         distance[usrotation] = USVAL;
-        Wait(25);
-        if(CurrentTick() - tlastrotation > 1000)
+        if(CurrentTick() - tlastrotation > 0)
         {
             if(usrotate)
             {
@@ -350,7 +348,7 @@ void DrawSensorValues()
     NumOut(50,  LCD_LINE2, dist, DRAW_OPT_CLEAR_EOL);
     NumOut(50,  LCD_LINE3, RELCOMPASSVAL, DRAW_OPT_CLEAR_EOL);
     NumOut(50,  LCD_LINE4, LIGHTVAL, DRAW_OPT_CLEAR_EOL);
-    NumOut(50,  LCD_LINE5, USVAL, DRAW_OPT_CLEAR_EOL);
+    //NumOut(50,  LCD_LINE5, USVAL, DRAW_OPT_CLEAR_EOL);
 }
 
 //Initialisation
@@ -363,7 +361,7 @@ void Init()
     //SetSensorLowspeed(MMXPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_NXT_Motors);
     /*
-    MMX_SetPerformanceParameters(S1, 0x06,
+    MMX_SetPerformanceParameters(S4, 0x06,
                                  4500, //int KP_tacho 5000
                                  0, //int KI_tacho 0
                                  380, //int KD_tacho 35000
@@ -374,6 +372,16 @@ void Init()
                                  1 //byte tolerance
                                 );
     */
+    MMX_SetPerformanceParameters(S4, 0x06,
+                                 20500,  //int KP_tacho 5000
+                                 0,     //int KI_tacho 0
+                                 60000, //int KD_tacho 35000
+                                 15000, //int KP_speed
+                                 300,   //int KI_speed
+                                 7500,  //int KD_speed
+                                 5,   //byte pass_count
+                                 6      //byte tolerance
+                                 );
     compassbeginval = RAWCOMPASSVAL;
     DrawSensorLabels();
     start DistChecker;

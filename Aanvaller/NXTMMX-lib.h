@@ -227,9 +227,8 @@ bool MMX_IsTimeDone(byte port, byte addr, byte motor_number)
 
 void MMX_WaitUntilTimeDone(byte port, byte addr, byte motor_number)
 {
-    while ( MMX_IsTimeDone(port, addr, motor_number) != true ) Wait(50);
+    while ( MMX_IsTimeDone(port, addr, motor_number) != true ) Wait(100);
 }
-
 
 bool MMX_IsTachoDone(byte port, byte addr, byte motor_number)
 {
@@ -256,9 +255,20 @@ bool MMX_IsTachoDone(byte port, byte addr, byte motor_number)
   return false;
 }
 
+/*
 void MMX_WaitUntilTachoDone(byte port, byte addr, byte motor_number)
 {
-    while ( MMX_IsTachoDone(port, addr, motor_number) != true ) Wait(50);       //Modified Wait(50) -> Yield()
+    while ( MMX_IsTachoDone(port, addr, motor_number) != true ) Wait(50);
+}
+*/
+
+void MMX_WaitUntilTachoDone(byte port, byte addr, byte motor_number)
+{
+    unsigned long t0 = CurrentTick();
+    while( MMX_IsTachoDone(port, addr, motor_number) != true &&  CurrentTick() - t0 < 1000)
+    {
+        Wait(50);       //Modified Wait(50) -> Yield()
+    }
 }
 
 int MMX_SendCommand(byte port, byte addr, byte cmd)
