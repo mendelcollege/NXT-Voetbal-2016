@@ -69,7 +69,8 @@ task main()
         if(BALLDIRUNKNOWN) dir = lastballstate;
         TextOut(0, LCD_LINE7, "Zoeken...", DRAW_OPT_CLEAR_EOL);
         
-        if(LIGHTVAL > WHITE)
+        //if(LIGHTVAL > WHITE)
+        if(false)
         {
             GoOpposite();
             Wait(500);
@@ -79,14 +80,15 @@ task main()
         {
             if(dist > POSSESSIONTHRESHOLD)
             {
-                Float(MOTORALL);
+                Off(MOTORALL);
                 //BoemBoemBatsiBa();
                 //ResetUS();
             }
             else
             {
-                if(dist > BALLCLOSE) GoForward(50);
-                if(dist <= BALLCLOSE) GoForward(100);
+                if(dist > BALLREALCLOSE) GoForward(40);
+                else if(dist > BALLSEMICLOSE) GoForward(60);
+                else GoForward(100);
             }
         }
         else if(dir > 5)
@@ -94,19 +96,19 @@ task main()
             lastballstate = dir;
             if(dir > 7)
             {
-                TurnRight(50);
+                TurnRight(100);
             }
             else if(dir == 7)
             {
-                TurnRight(40);
+                TurnRight(60);
             }
             else
             {
-                if(dist > BALLCLOSE)
+                if(dist > BALLREALCLOSE)
                 {
                     GoRB(75);
                 }
-                else TurnRight(50);
+                else TurnRight(40);
             }
         }
         else if(dir < 5)
@@ -118,15 +120,15 @@ task main()
             }
             else if(dir == 3)
             {
-                TurnLeft(50);
+                TurnLeft(60);
             }
             else
             {
-                if(dist > BALLCLOSE)
+                if(dist > BALLREALCLOSE)
                 {
                     GoLB(75);
                 }
-                else TurnLeft(50);
+                else TurnLeft(40);
             }
         }
         Yield();

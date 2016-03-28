@@ -138,7 +138,7 @@ void Kick()
 #define RELCOMPASSVAL RelCompassVal()
 #define LIGHTVAL SENSOR_3
 #define WHITE 30 //?
-#define BLACK 40 //?
+#define BLACK 20 //?
 #define USVAL SensorUS(S4)
 
 //IRBall
@@ -146,8 +146,9 @@ void Kick()
 #define BALLDIRRIGHT (dir > 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define POSSESSIONTHRESHOLD 255
-#define BALLCLOSE 130
+#define POSSESSIONTHRESHOLD 270
+#define BALLSEMICLOSE 120
+#define BALLREALCLOSE 200
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 #define BallCheckReturn() UpdateIRValues(); if(!BALLPOSSESSION) return
 
@@ -211,6 +212,8 @@ safecall int CompassVal()
     }
 }
 
+void DrawSensorValues();
+
 safecall int RelCompassVal()
 {
     int tmp = RAWCOMPASSVAL - compassbeginval;
@@ -222,8 +225,8 @@ safecall int RelCompassVal()
 void TurnTo(int turn, char speed)
 {
     int compass = RELCOMPASSVAL;
-    while(turn <= compass - 180) turn += 360;
-    while(turn >  compass + 180) turn -= 360;
+    //while(turn <= compass - 180) turn += 360;
+    //while(turn >  compass + 180) turn -= 360;
     TurnLeft(speed);
     while(RELCOMPASSVAL > turn + 5);
     TurnRight(speed);
@@ -306,27 +309,30 @@ task DistChecker()
     {
         //Acquire(distchecker);
         abspos  = dirdeg[usrotation] - RELCOMPASSVAL;
+        abspos = -abspos;
         while(abspos <= -180) abspos += 360;
         while(abspos >   180) abspos -= 360;
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
                            MMX_Direction_Forward,
-                           60,
+                           100,
                            abspos,
                            false,  //Relative
-                           true,   //Wait for completion.
+                           false,   //Wait for completion.
                            MMX_Next_Action_Brake);
-        NumOut(0,LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1) - abspos, DRAW_OPT_CLEAR_EOL);
-        NumOut(50,LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
+        if(usrotate)MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+        NumOut(0, LCD_LINE8, dirdeg[usrotation], DRAW_OPT_CLEAR_EOL);
+        NumOut(25, LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
+        NumOut(50, LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1) - abspos, DRAW_OPT_CLEAR_EOL);
         distance[usrotation] = USVAL;
-        if(CurrentTick() - tlastrotation > 0)
+        //if(CurrentTick() - tlastrotation > 0)
         {
             if(usrotate)
             {
                     usrotation++;
                     if(usrotation == 4) usrotation = 0;
-                    tlastrotation = CurrentTick();
+                    //tlastrotation = CurrentTick();
             }
         }
     }
@@ -373,14 +379,14 @@ void Init()
                                 );
     */
     MMX_SetPerformanceParameters(S4, 0x06,
-                                 20500,  //int KP_tacho 5000
+                                 21000,  //int KP_tacho 5000
                                  0,     //int KI_tacho 0
                                  60000, //int KD_tacho 35000
                                  15000, //int KP_speed
                                  300,   //int KI_speed
                                  7500,  //int KD_speed
-                                 5,   //byte pass_count
-                                 6      //byte tolerance
+                                 4,   //byte pass_count
+                                 8      //byte tolerance
                                  );
     compassbeginval = RAWCOMPASSVAL;
     DrawSensorLabels();

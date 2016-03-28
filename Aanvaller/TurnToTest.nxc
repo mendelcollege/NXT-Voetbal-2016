@@ -1,0 +1,15 @@
+#include "libAanvaller.h"
+
+task Puke()
+{
+    while(true) DrawSensorValues();
+}
+
+task main()
+{
+    Init();
+    start Puke;
+    TurnTo(-90, 40);
+    Wait(500);
+    TurnTo(90, 40);
+}

@@ -3,9 +3,11 @@
 task main()
 {
     Init();
+    //PointUS(FORWARD);
     while(true)
     {
         UpdateIRValues();
         DrawSensorValues();
+        Yield();
     }
 }

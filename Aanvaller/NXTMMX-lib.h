@@ -265,9 +265,10 @@ void MMX_WaitUntilTachoDone(byte port, byte addr, byte motor_number)
 void MMX_WaitUntilTachoDone(byte port, byte addr, byte motor_number)
 {
     unsigned long t0 = CurrentTick();
-    while( MMX_IsTachoDone(port, addr, motor_number) != true &&  CurrentTick() - t0 < 1000)
+    while( MMX_IsTachoDone(port, addr, motor_number) != true &&  CurrentTick() - t0 < 700)
     {
-        Wait(50);       //Modified Wait(50) -> Yield()
+        Yield();
+        //Wait(50);
     }
 }
 
