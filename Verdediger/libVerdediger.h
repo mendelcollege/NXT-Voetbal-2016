@@ -170,10 +170,10 @@ char stdcorrectingspeed = 0;
 #define COMPENSATOR OUT_C
 #define MOTOR_ALL OUT_ABC
 
-#define CORSPEEDLEFT -70
-#define CORSPEEDRIGHT 70
-#define CORSPEEDFORWARD 20
-#define CORSPEEDBACKWARD -20
+#define CORSPEEDLEFT -68
+#define CORSPEEDRIGHT 73
+#define CORSPEEDFORWARD 25
+#define CORSPEEDBACKWARD -55
 
 #define TurnRight(speed) OnFwd(COMPENSATOR, speed)
 #define TurnLeft(speed) OnFwd(COMPENSATOR, (-speed))
