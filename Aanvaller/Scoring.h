@@ -1,32 +1,26 @@
 void BoemBoemBatsiBa()
 {
     GoNowhere();
-    while(true)
+    //UpdateIRValues();
+    TextOut(0, LCD_LINE7, "Richten...", DRAW_OPT_CLEAR_EOL);
+    BallCheckReturn(); //also updates IR
+    TurnTo(0, 40);
+    BallCheckReturn(); //also updates IR
+    while(true){
+    if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
     {
-        UpdateIRValues();
-        TextOut(0, LCD_LINE7, "Richten...", DRAW_OPT_CLEAR_EOL);
-        if(!BALLPOSSESSION) return;
-        if(RELCOMPASSVAL > 5) TurnLeft(75);
-        if(RELCOMPASSVAL < -5) TurnRight(75);
-        if(abs(RELCOMPASSVAL) < 5)
-        {
-            Off(MOTORALL);
-            if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
-            {
-                TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
-                GoForward(100);
-                Wait(500);
-                Kick();
-                Wait(500);
-                GoNowhere();
-                return;
-            }
-            else
-            {
-                TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
-            }
-        }
+        TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
+        GoForward(100);
+        Wait(3000);
+        Kick();
+        Wait(200);
+        GoNowhere();
+        Stop(true);
     }
+    else
+    {
+        TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
+    }}
 }
 
 void BoemBoemBatsiBaTheSequel()

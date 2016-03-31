@@ -146,11 +146,12 @@ void Kick()
 #define BALLDIRRIGHT (dir > 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define POSSESSIONTHRESHOLD 270
-#define BALLSEMICLOSE 120
-#define BALLREALCLOSE 200
+#define POSSESSIONTHRESHOLD 290
+#define BALLLOSTTHRESHOLD 275
+#define BALLSEMICLOSE 200
+#define BALLREALCLOSE 230
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
-#define BallCheckReturn() UpdateIRValues(); if(!BALLPOSSESSION) return
+#define BallCheckReturn() UpdateIRValues(); if(dist < BALLLOSTTHRESHOLD) return
 
 int dir;
 int dist;
