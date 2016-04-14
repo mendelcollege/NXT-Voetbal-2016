@@ -52,23 +52,30 @@ void IR()
     if(s9 > dist) dist = s9;
 }
 
-void HTEnhancedIRSeekerV2(const byte  port, int &direction = dir, int &strength = dist)
+void HTEnhancedIRSeekerV2(const byte  port, int &dir, int &strength)
 {
   int cResp;
-  byte cmdBuf[] = {0x10, 0x43};
-  byte respBuf[];
+  byte cmdBuf[] = {0x10, 0x43};  // Read DC signal strengths (skip the dir)
+  byte respBuf[];                 // Response Buffer
   bool fSuccess;
   int i, iMax;
   long dcSigSum, dcStr;
+
   dir = 0;
   strength = 0;
+
+  // Read DC mode
   cResp=6;
   fSuccess = I2CBytes(port, cmdBuf, cResp, respBuf);
   if (fSuccess) {
+    // Find the max DC sig strength
     iMax = 0;
     for (i=1; i<5; i++) if (respBuf[i] > respBuf[iMax]) iMax = i;
+    // Calc base DC direction value
     dir = iMax*2+1;
+    // Set base dcStrength based on max signal and average
     dcSigSum = respBuf[iMax] + respBuf[5];
+    // Check signal strength of neighboring sensor elements
     if ((iMax > 0) && (respBuf[iMax-1] > respBuf[iMax]/2)) {
         dir--;
         dcSigSum += respBuf[iMax-1];
@@ -77,16 +84,20 @@ void HTEnhancedIRSeekerV2(const byte  port, int &direction = dir, int &strength 
         dir++;
         dcSigSum += respBuf[iMax+1];
     }
+    // Make DC strength compatible with AC strength. use: sqrt(dcSigSum*500)
     dcSigSum *= 500; dcStr = 1;
-    repeat(10) dcStr = (dcSigSum/dcStr + dcStr) / 2;  // sqrt
+    repeat(10) dcStr = (dcSigSum/dcStr + dcStr) / 2;  // sqrt approx
     strength = dcStr;
+    // Decide if using DC strength or should read and use AC strength
     if (strength <= 200) {
+      // Use AC Dir
       dir = 0; strength = 0;
-      cmdBuf[1] = 0x49;
+      cmdBuf[1] = 0x49; // Recycle rest of cmdBuf from the DC read operation
       cResp=6;
       fSuccess = I2CBytes(port, cmdBuf, cResp, respBuf);
       if (fSuccess) {
         dir = respBuf[0];
+        // Sum the sensor elements to get strength
         if (dir > 0) for (i=1; i<=5; i++) strength += respBuf[i];
       }
     }
@@ -170,10 +181,10 @@ char stdcorrectingspeed = 0;
 #define COMPENSATOR OUT_C
 #define MOTOR_ALL OUT_ABC
 
-#define CORSPEEDLEFT -68
-#define CORSPEEDRIGHT 73
+#define CORSPEEDLEFT -80
+#define CORSPEEDRIGHT 90
 #define CORSPEEDFORWARD 25
-#define CORSPEEDBACKWARD -55
+#define CORSPEEDBACKWARD -25
 
 #define TurnRight(speed) OnFwd(COMPENSATOR, speed)
 #define TurnLeft(speed) OnFwd(COMPENSATOR, (-speed))
@@ -181,7 +192,7 @@ char stdcorrectingspeed = 0;
 inline void GoLeft()
 {
     OnFwd(MOTOR_X, 100);
-    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
     Off(MOTOR_Y);
     stdcorrectingspeed = CORSPEEDLEFT;
 }
@@ -189,7 +200,7 @@ inline void GoLeft()
 inline void GoRight()
 {
     OnFwd(MOTOR_X, -100);
-    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
     Off(MOTOR_Y);
     stdcorrectingspeed = CORSPEEDRIGHT;
 }
@@ -231,7 +242,7 @@ void Go(char speedx, char speedy) //Positive = Right Forward Negative = Left, Re
     
     //Invert for motor polarity
     speedy = -speedy;
-    speedx = -speedx;
+    //speedx = -speedx;
     
     //Calculate vectorial correctingspeed
     correctingspeedx = correctingspeedx * abs(speedx) / 100;
@@ -275,8 +286,8 @@ void Correct()
 }
 
 //Behaviour
-#define RETURNTHRESHOLD 2000
-#define DEFLECTTHRESHOLD 500
+#define RETURNTHRESHOLD 3000
+#define DEFLECTTHRESHOLD 100
 
 //Initialisation
 void Init()
