@@ -1,0 +1,26 @@
+#include "libVerdediger.h"
+
+task main()
+{
+    Init();
+    while(true)
+    {
+        //Acquire(corrector);
+        Go(75,100);
+        Wait(3000);
+        //rechts, vooruit
+
+        Go(75,-100);
+        Wait(3000);
+        //rechts, achteruit
+
+        Go(-75,100);
+        Wait(3000);
+        //links, vooruit
+
+        Go(-75,-100);
+        Wait(3000);
+        //links, achteruit
+        //Release(corrector);
+    }
+}

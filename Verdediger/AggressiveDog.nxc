@@ -3,11 +3,17 @@
 long t0ballunknown;
 long t0ballstraight;
 
-task main();
-task Guard();
+task AggressiveDog();
 task TrackLeft();
 task TrackRight();
 
+task main()
+{
+    Init();
+    t0ballunknown = 0;
+    t0ballstraight = 0;
+    ExitTo(AggressiveDog);
+}
 void ReturnToBeginPos()
 {
     TextOut(0, LCD_LINE6, "Returning...", DRAW_OPT_CLEAR_EOL);
@@ -41,76 +47,26 @@ void ReturnToBeginPos()
     GoNowhere();
 }
 
-void Deflect()
+void AggressiveDeflect()
 {
     TextOut(0, LCD_LINE6, "Deflecting...", DRAW_OPT_CLEAR_EOL);
     PlayTone(TONE_A4, 500);
     while(true)
     {
         UpdateIRValues();
-        if     (USBACKVAL > 60)     break;
-        else if(USBACKVAL < 20)     break;
-        else if(BALLDIRSTRAIGHT)
-        {
-            TextOut(0, LCD_LINE6, "STRAIGHT...", DRAW_OPT_CLEAR_EOL);
-            GoForward();
-        }
-        else if(BALLDIRSHORTLEFT)
-        {
-            TextOut(0, LCD_LINE6, "SHORTLEFT...", DRAW_OPT_CLEAR_EOL);
-            Go(-100,100);
-        }
-        else if(BALLDIRSHORTRIGHT)
-        {
-            TextOut(0, LCD_LINE6, "SHORTRIGHT...", DRAW_OPT_CLEAR_EOL);
-            Go(100,100);
-        }
-        else if(BALLDIRLONGLEFT)
-        {
-            TextOut(0, LCD_LINE6, "LONGLEFT...", DRAW_OPT_CLEAR_EOL);
-            GoLeft();
-        }
-        else if(BALLDIRLONGRIGHT)
-        {
-            TextOut(0, LCD_LINE6, "LONGRIGHT...", DRAW_OPT_CLEAR_EOL);
-            GoRight();
-        }
-        else
-        {
-            TextOut(0, LCD_LINE6, "NIKS...", DRAW_OPT_CLEAR_EOL);
-            GoNowhere();
-            break;
-        }
+        if     (USBACKVAL > 60)    ExitTo(AggressiveDog);
+        else if(USBACKVAL < 20)    ExitTo(AggressiveDog);
+        else if(BALLDIRSTRAIGHT)   GoForward();
+        else if(BALLDIRSHORTLEFT)  Go(-100,100);
+        else if(BALLDIRSHORTRIGHT) Go(100,100);
+        else if(BALLDIRLONGLEFT)   GoLeft();
+        else if(BALLDIRLONGRIGHT)  GoRight();
+
     }
 }
 
-void CorrectDeflect() //Spreek het uit, het klinkt geweldig, al zeg ik het zelf
-{
-    TextOut(0, LCD_LINE6, "CorectDeflect...", DRAW_OPT_CLEAR_EOL);
-    PlayTone(TONE_A4, 500);
-    aim = RELCOMPASSVAL;
-    Release(corrector);
-    GoForward();
-    Wait(2000);
-    GoBackward();
-    Wait(2000);
-    GoNowhere();
-    Acquire(corrector);
-    aim = 0;
-    PlayTone(TONE_A3, 500);
-}
 
-
-
-task main()
-{
-    Init();
-    t0ballunknown = 0;
-    t0ballstraight = 0;
-    ExitTo(Guard);
-}
-
-task Guard()
+task AggressiveDog()
 {
     GoNowhere();
     while(true)
@@ -122,18 +78,20 @@ task Guard()
         {
             GoForward();
         }
+        else if(USBACKVAL > 40)
+        {
+            GoBackward();
+        }
         else if(BALLDIRSTRAIGHT)
         {
-            if(USBACKVAL < 80) GoForward();
-            GoForward();
+            GoNowhere();
             t0ballunknown = 0;
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
-            //if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD) Deflect();
+            if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
+            {
+                if(dist > BALLDISTANCETHRESHOLD) AggressiveDeflect();
+            }
         }
-        //else if(USBACKVAL > 50)
-        //{
-        //    GoBackward();
-        //}
         else if(BALLDIRUNKNOWN)
         {
             GoNowhere();
@@ -141,87 +99,38 @@ task Guard()
             if(t0ballunknown == 0) t0ballunknown = CurrentTick();
             if(CurrentTick() - t0ballunknown > RETURNTHRESHOLD)
             {
-                //if(abs(RELCOMPASSVAL) < 5) ReturnToBeginPos();
+                if(abs(RELCOMPASSVAL) < 5) AggressiveDeflect();
+                ReturnToBeginPos();
             }
-            else if(USBACKVAL > 50)
+        }
+        else if(BALLDIRLEFT)
+        {
+            t0ballunknown = 0;
+            t0ballstraight = 0;
+            if(XPos() > -25)
             {
-                GoBackward();
+                GoLeft();
+            }
+            else
+            {
+                GoNowhere();
+                ExitTo(TrackLeft);
             }
         }
         else if(BALLDIRRIGHT)
         {
             t0ballunknown = 0;
             t0ballstraight = 0;
-            if(USBACKVAL < 35)
-            {
-                if(XPos() < 25)
-                {
-                    GoRight();
-                }
-                else
-                {
-                    GoNowhere();
-                }
-            }
-            else if(XPos() > 25)
-            {
-                GoBackward();
-            }
-            else if(BALLDIRSHORTRIGHT)
+            if(XPos() < 25)
             {
                 GoRight();
             }
-            else if(BALLDIRMIDDLERIGHT)
-            {
-                GoRight();
-            }
-            else if(dir < 3)
-            {
-                GoBackward();
-            }
             else
             {
-                GoBackward();
+                GoNowhere();
+                ExitTo(TrackRight);
             }
         }
-
-        else if(BALLDIRLEFT)
-        {
-            t0ballunknown = 0;
-            t0ballstraight = 0;
-            if(USBACKVAL < 35)
-            {
-                if(XPos() > -25)
-                {
-                    GoLeft();
-                }
-                else
-                {
-                    GoNowhere();
-                }
-            }
-            else if(XPos() < -25)
-            {
-                GoBackward();
-            }
-            else if(BALLDIRSHORTLEFT)
-            {
-                GoLeft();
-            }
-            else if(BALLDIRMIDDLELEFT)
-            {
-                GoLeft();
-            }
-            else if(dir > 7)
-            {
-                GoBackward();
-            }
-            else
-            {
-                GoBackward();
-            }
-        }
-        Yield();
     }
 }
 
@@ -240,7 +149,7 @@ task TrackLeft()
             if(t0ballstraight == 0) t0ballstraight = CurrentTick();
             if(CurrentTick() - t0ballstraight > DEFLECTTHRESHOLD)
             {
-                if(dist > BALLDISTANCETHRESHOLD) CorrectDeflect();
+                if(dist > BALLDISTANCETHRESHOLD) AggressiveDeflect();
             }
         }
         else if(BALLDIRUNKNOWN)
@@ -272,7 +181,7 @@ task TrackLeft()
                 if(RELCOMPASSVAL > -5)
                 {
                     Release(corrector);
-                    ExitTo(Guard);
+                    ExitTo(AggressiveDog);
                 }
                 else TurnRight(75);
         }
@@ -327,7 +236,7 @@ task TrackRight()
                 if(RELCOMPASSVAL < 5)
                 {
                     Release(corrector);
-                    ExitTo(Guard);
+                    ExitTo(AggressiveDog);
                 }
                 else TurnLeft(75);
         }
