@@ -1,3 +1,4 @@
+
 #include "libVerdediger.h"
 
 task main()
@@ -7,11 +8,11 @@ task main()
     {
         Off(MOTOR_ALL);
         MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
-        Wait(2000);
+        Wait(500);
 
         //GoLeft
         OnFwd(MOTOR_X, 100);
-        MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
+        MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
         Off(MOTOR_Y);
         OnFwd(COMPENSATOR, CORSPEEDLEFT);
         Wait(3000);
@@ -22,7 +23,7 @@ task main()
         
         //GoRight
         OnFwd(MOTOR_X, -100);
-        MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
+        MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
         Off(MOTOR_Y);
         OnFwd(COMPENSATOR, CORSPEEDRIGHT);
         Wait(3000);
@@ -33,7 +34,7 @@ task main()
         
         //GoForward
         Off(MOTOR_X);
-        OnFwd(MOTOR_Y, -100);
+        OnFwd(MOTOR_Y, 100);
         OnFwd(COMPENSATOR, CORSPEEDFORWARD);
         Wait(3000);
         
@@ -42,7 +43,7 @@ task main()
 
         //GoBackward
         Off(MOTOR_X);
-        OnFwd(MOTOR_Y, 100);
+        OnFwd(MOTOR_Y, -100);
         OnFwd(COMPENSATOR, CORSPEEDBACKWARD);
         Wait(3000);
     }

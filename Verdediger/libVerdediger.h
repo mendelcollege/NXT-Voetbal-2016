@@ -1,5 +1,6 @@
-#include "NXTMMX-lib.h"
-
+  #include "NXTMMX-lib.h"
+                                                                                //aantekening boost converter: klok mee hoger
+                                                                                //tegen klok in lager
 //Port aliases
 #define IRSEEKERPORT S1
 #define COMPASSSENSORPORT S2
@@ -34,8 +35,14 @@ inline int YPos()
 #define BALLDIRLEFT (dir > 5)
 #define BALLDIRRIGHT (dir < 5)
 #define BALLDIRSTRAIGHT (dir == 5)
+#define BALLDIRSHORTLEFT (dir == 6)
+#define BALLDIRSHORTRIGHT (dir == 4)
+#define BALLDIRMIDDLELEFT (dir == 7)
+#define BALLDIRMIDDLERIGHT (dir == 3)
+#define BALLDIRLONGLEFT (dir < 3)
+#define BALLDIRLONGRIGHT (dir > 7)
 #define BALLDIRUNKNOWN (dir == 0)
-#define BALLDISTANCETHRESHOLD 150
+#define BALLDISTANCETHRESHOLD 100
 
 int dir;
 int dist;
@@ -52,23 +59,30 @@ void IR()
     if(s9 > dist) dist = s9;
 }
 
-void HTEnhancedIRSeekerV2(const byte  port, int &direction = dir, int &strength = dist)
+void HTEnhancedIRSeekerV2(const byte  port, int &dir, int &strength)
 {
   int cResp;
-  byte cmdBuf[] = {0x10, 0x43};
-  byte respBuf[];
+  byte cmdBuf[] = {0x10, 0x43};  // Read DC signal strengths
+  byte respBuf[];                 // Response Buffer
   bool fSuccess;
   int i, iMax;
   long dcSigSum, dcStr;
+
   dir = 0;
   strength = 0;
+
+  // Read DC mode
   cResp=6;
   fSuccess = I2CBytes(port, cmdBuf, cResp, respBuf);
   if (fSuccess) {
+    // Find the max DC sig strength
     iMax = 0;
     for (i=1; i<5; i++) if (respBuf[i] > respBuf[iMax]) iMax = i;
+    // Calc base DC direction value
     dir = iMax*2+1;
+    // Set base dcStrength based on max signal and average
     dcSigSum = respBuf[iMax] + respBuf[5];
+    // Check signal strength of neighboring sensor elements
     if ((iMax > 0) && (respBuf[iMax-1] > respBuf[iMax]/2)) {
         dir--;
         dcSigSum += respBuf[iMax-1];
@@ -77,16 +91,21 @@ void HTEnhancedIRSeekerV2(const byte  port, int &direction = dir, int &strength 
         dir++;
         dcSigSum += respBuf[iMax+1];
     }
+    // Make DC strength compatible with AC strength.
+	// use: sqrt(dcSigSum*500)
     dcSigSum *= 500; dcStr = 1;
     repeat(10) dcStr = (dcSigSum/dcStr + dcStr) / 2;  // sqrt
     strength = dcStr;
+    // Decide if using DC strength
     if (strength <= 200) {
+      // Use AC Dir
       dir = 0; strength = 0;
-      cmdBuf[1] = 0x49;
+      cmdBuf[1] = 0x49; // Recycle rest of cmdBuf
       cResp=6;
       fSuccess = I2CBytes(port, cmdBuf, cResp, respBuf);
       if (fSuccess) {
         dir = respBuf[0];
+        // Sum the sensor elements to get strength
         if (dir > 0) for (i=1; i<=5; i++) strength += respBuf[i];
       }
     }
@@ -170,10 +189,10 @@ char stdcorrectingspeed = 0;
 #define COMPENSATOR OUT_C
 #define MOTOR_ALL OUT_ABC
 
-#define CORSPEEDLEFT -68
-#define CORSPEEDRIGHT 73
-#define CORSPEEDFORWARD 25
-#define CORSPEEDBACKWARD -55
+#define CORSPEEDLEFT 65
+#define CORSPEEDRIGHT -62
+#define CORSPEEDFORWARD 20
+#define CORSPEEDBACKWARD -20
 
 #define TurnRight(speed) OnFwd(COMPENSATOR, speed)
 #define TurnLeft(speed) OnFwd(COMPENSATOR, (-speed))
@@ -181,7 +200,7 @@ char stdcorrectingspeed = 0;
 inline void GoLeft()
 {
     OnFwd(MOTOR_X, 100);
-    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
     Off(MOTOR_Y);
     stdcorrectingspeed = CORSPEEDLEFT;
 }
@@ -189,7 +208,7 @@ inline void GoLeft()
 inline void GoRight()
 {
     OnFwd(MOTOR_X, -100);
-    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, 100);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, 100);
     Off(MOTOR_Y);
     stdcorrectingspeed = CORSPEEDRIGHT;
 }
@@ -198,7 +217,7 @@ inline void GoForward()
 {
     Off(MOTOR_X);
     MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
-    OnFwd(MOTOR_Y, -100);
+    OnFwd(MOTOR_Y, 100);
     stdcorrectingspeed = CORSPEEDFORWARD;
 }
 
@@ -206,7 +225,7 @@ inline void GoBackward()
 {
     Off(MOTOR_X);
     MMX_Stop(MMXPORT, 0x06, MMXPORT, MMX_Next_Action_Brake);
-    OnFwd(MOTOR_Y, 100);
+    OnFwd(MOTOR_Y, -100);
     stdcorrectingspeed = CORSPEEDBACKWARD;
 }
 
@@ -239,12 +258,11 @@ void Go(char speedx, char speedy) //Positive = Right Forward Negative = Left, Re
     
     //Calc total correctingspeed and turn on motors
     OnFwd(MOTOR_X, speedx);
-    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Forward, speedx);
+    MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_Both, MMX_Direction_Reverse, speedx);
     OnFwd(MOTOR_Y, speedy);
     stdcorrectingspeed = correctingspeedx + correctingspeedy;
+    //OnFwd(COMPENSATOR, stdcorrectingspeed);
 }
-
-#define CORRECTORISTASK
 
 mutex corrector;
 int aim = 0;
@@ -268,7 +286,7 @@ task Corrector()
 void Correct()
 {
     static int correctingspeed;
-    correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 2;
+    correctingspeed = stdcorrectingspeed - RELCOMPASSVAL * 5;
     if(correctingspeed > 100) correctingspeed = 100;
     if(correctingspeed < -100) correctingspeed = -100;
     OnFwd(COMPENSATOR, correctingspeed);
@@ -276,7 +294,7 @@ void Correct()
 
 //Behaviour
 #define RETURNTHRESHOLD 2000
-#define DEFLECTTHRESHOLD 500
+#define DEFLECTTHRESHOLD 200
 
 //Initialisation
 void Init()
@@ -284,7 +302,7 @@ void Init()
     SetSensorLowspeed(IRSEEKERPORT);
     SetSensorLowspeed(COMPASSSENSORPORT);
     SetSensorLowspeed(USSENSORLEFTPORT);
-    SetSensorLowspeed(USSENSORBACKPORT);
+    //SetSensorLowspeed(USSENSORBACKPORT);
     MMX_Init(MMXPORT, 0x06, MMX_Profile_RCX_Motors);
     compassbeginval = SensorHTCompass(COMPASSSENSORPORT);
     start Corrector;
