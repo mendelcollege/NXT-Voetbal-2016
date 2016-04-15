@@ -1,28 +1,3 @@
-void BoemBoemBatsiBa()
-{
-    GoNowhere();
-    //UpdateIRValues();
-    TextOut(0, LCD_LINE7, "Richten...", DRAW_OPT_CLEAR_EOL);
-    BallCheckReturn(); //also updates IR
-    TurnTo(0, 40);
-    BallCheckReturn(); //also updates IR
-    while(true){
-    if((CurrentTick() - tlastkick) >= RECHARGINGTIME)
-    {
-        TextOut(0, LCD_LINE7, "Kick...", DRAW_OPT_CLEAR_EOL);
-        GoForward(100);
-        Wait(3000);
-        Kick();
-        Wait(200);
-        GoNowhere();
-        Stop(true);
-    }
-    else
-    {
-        TextOut(0, LCD_LINE7, "Charging...", DRAW_OPT_CLEAR_EOL);
-    }}
-}
-
 void BoemBoemBatsiBaTheSequel()
 {
     int improveddistance[4];

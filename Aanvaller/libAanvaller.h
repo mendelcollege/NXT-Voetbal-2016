@@ -1,5 +1,5 @@
 #include "NXTMMX-lib.h"
-
+mutex MC;
 //General
 #define aproxequal(n1, n2, maxdif) (abs(n1-n2) < maxdif)
 
@@ -31,6 +31,20 @@ inline void TurnLeft(char speed)
     OnFwd(MOTORLEFT , speed);
     OnFwd(MOTORRIGHT, speed);
     OnFwd(MOTORBACK , speed);
+}
+
+inline void TurnRightSlow(char fwdspeed, char turnspeed)
+{
+    OnRev(MOTORLEFT , fwdspeed);
+    OnFwd(MOTORRIGHT, fwdspeed);
+    OnRev(MOTORBACK , turnspeed);
+}
+
+inline void TurnLeftSlow(char fwdspeed, char turnspeed)
+{
+    OnRev(MOTORLEFT , fwdspeed);
+    OnFwd(MOTORRIGHT, fwdspeed);
+    OnFwd(MOTORBACK , turnspeed);
 }
                             
 inline void GoForward(char speed)
@@ -77,7 +91,7 @@ inline void GoRF(char speed)
 {
     OnRev(MOTORLEFT , speed);
     Off(MOTORRIGHT);
-    OnFwd(MOTORBACK , speed);
+    OnFwd(MOTORBACK , 0.5 * speed);
     currentdrivedir = RF;
 }
 
@@ -119,15 +133,17 @@ void GoOpposite()
 #define MMXPORT S4
 
 //Kicker
-#define RECHARGINGTIME 10000
+#define RECHARGINGTIME 4000
 #define KICKTIME 30
 unsigned long tlastkick = 0;
 
 void Kick()
 {
+    Acquire(MC);
     MMX_Run_Unlimited(MMXPORT, 0x06, MMX_Motor_2, MMX_Direction_Forward, 100);
     Wait(KICKTIME);   //Hou zo laag mogelijk. => Save energy! Save the planet!
     MMX_Stop(MMXPORT, 0x06, MMX_Motor_2, MMX_Next_Action_Float);
+    Release(MC);
     tlastkick = CurrentTick();
 }
 
@@ -137,8 +153,8 @@ void Kick()
 #define COMPASSVAL CompassVal()
 #define RELCOMPASSVAL RelCompassVal()
 #define LIGHTVAL SENSOR_3
-#define WHITE 30 //?
-#define BLACK 20 //?
+#define WHITE 20 //?
+#define BLACK 5 //?
 #define USVAL SensorUS(S4)
 
 //IRBall
@@ -146,10 +162,10 @@ void Kick()
 #define BALLDIRRIGHT (dir > 5 && dir != 0)
 #define BALLDIRSTRAIGHT (dir == 5)
 #define BALLDIRUNKNOWN (dir == 0)
-#define POSSESSIONTHRESHOLD 290
-#define BALLLOSTTHRESHOLD 275
+#define POSSESSIONTHRESHOLD 280
+#define BALLLOSTTHRESHOLD 220
 #define BALLSEMICLOSE 200
-#define BALLREALCLOSE 230
+#define BALLREALCLOSE 220
 #define BALLPOSSESSION (dir == 5 && dist > POSSESSIONTHRESHOLD)
 #define BallCheckReturn() UpdateIRValues(); if(dist < BALLLOSTTHRESHOLD) return
 
@@ -229,9 +245,42 @@ void TurnTo(int turn, char speed)
     //while(turn <= compass - 180) turn += 360;
     //while(turn >  compass + 180) turn -= 360;
     TurnLeft(speed);
-    while(RELCOMPASSVAL > turn + 5);
+    while(RELCOMPASSVAL > turn + 3) BallCheckReturn();
     TurnRight(speed);
-    while(RELCOMPASSVAL < turn - 5);
+    while(RELCOMPASSVAL < turn - 3) BallCheckReturn();
+    GoNowhere();
+}
+
+
+void TurnToSlow(int turn, char fwdspeed, char turnspeed)
+{
+    int compass = RELCOMPASSVAL;
+    //while(turn <= compass - 180) turn += 360;
+    //while(turn >  compass + 180) turn -= 360;
+    TurnLeftSlow(fwdspeed, turnspeed);
+    while(RELCOMPASSVAL > turn + 3)
+    {
+        BallCheckReturn();
+        if(LIGHTVAL > WHITE)
+        {
+            TurnRightSlow(fwdspeed, turnspeed);
+            Wait(500);
+            GoBackward(50);
+            Wait(500);
+        }
+    }
+    TurnRightSlow(fwdspeed, turnspeed);
+    while(RELCOMPASSVAL < turn - 3)
+    {
+        BallCheckReturn();
+        if(LIGHTVAL > WHITE)
+        {
+            TurnRightSlow(fwdspeed, turnspeed);
+            Wait(500);
+            GoBackward(50);
+            Wait(500);
+        }
+    }
     GoNowhere();
 }
 
@@ -313,6 +362,7 @@ task DistChecker()
         abspos = -abspos;
         while(abspos <= -180) abspos += 360;
         while(abspos >   180) abspos -= 360;
+        Acquire(MC);
         MMX_Run_Tachometer(MMXPORT,
                            0x06,
                            MMX_Motor_1,
@@ -323,18 +373,17 @@ task DistChecker()
                            false,   //Wait for completion.
                            MMX_Next_Action_Brake);
         if(usrotate)MMX_WaitUntilTachoDone(MMXPORT, 0x06, MMX_Motor_1);
+        Release(MC);
+        Wait(50);
         NumOut(0, LCD_LINE8, dirdeg[usrotation], DRAW_OPT_CLEAR_EOL);
         NumOut(25, LCD_LINE8, abspos, DRAW_OPT_CLEAR_EOL);
         NumOut(50, LCD_LINE8, MMX_ReadTachometerPosition(MMXPORT, 0x06, MMX_Motor_1) - abspos, DRAW_OPT_CLEAR_EOL);
         distance[usrotation] = USVAL;
-        //if(CurrentTick() - tlastrotation > 0)
+        if(usrotate)
         {
-            if(usrotate)
-            {
-                    usrotation++;
-                    if(usrotation == 4) usrotation = 0;
-                    //tlastrotation = CurrentTick();
-            }
+                usrotation++;
+                if(usrotation == 4) usrotation = 0;
+                //tlastrotation = CurrentTick();
         }
     }
 }
@@ -346,7 +395,7 @@ void DrawSensorLabels()
     TextOut(0,  LCD_LINE2, "IRdist:");
     TextOut(0,  LCD_LINE3, "Compass:");
     TextOut(0,  LCD_LINE4, "Light:");
-    TextOut(0,  LCD_LINE5, "US:");
+    //TextOut(0,  LCD_LINE5, "Dist:");
 }
 
 void DrawSensorValues()
@@ -355,7 +404,11 @@ void DrawSensorValues()
     NumOut(50,  LCD_LINE2, dist, DRAW_OPT_CLEAR_EOL);
     NumOut(50,  LCD_LINE3, RELCOMPASSVAL, DRAW_OPT_CLEAR_EOL);
     NumOut(50,  LCD_LINE4, LIGHTVAL, DRAW_OPT_CLEAR_EOL);
-    //NumOut(50,  LCD_LINE5, USVAL, DRAW_OPT_CLEAR_EOL);
+    //NumOut(0,  LCD_LINE5, distance[FORWARD], DRAW_OPT_CLEAR_EOL);
+    //NumOut(50,  LCD_LINE5, distance[RIGHT], DRAW_OPT_CLEAR_EOL);
+    //NumOut(0,  LCD_LINE6, distance[BACK], DRAW_OPT_CLEAR_EOL);
+    //NumOut(50,  LCD_LINE6, distance[LEFT], DRAW_OPT_CLEAR_EOL);
+    NumOut(50,  LCD_LINE5, USVAL, DRAW_OPT_CLEAR_EOL); //Causes crash
 }
 
 //Initialisation
@@ -391,5 +444,5 @@ void Init()
                                  );
     compassbeginval = RAWCOMPASSVAL;
     DrawSensorLabels();
-    start DistChecker;
+    //start DistChecker;
 }

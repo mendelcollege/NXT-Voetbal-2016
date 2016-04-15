@@ -6,57 +6,41 @@
 #define self
 #define destroy(x)
 
-void GettingAwayFromItAll()
+void BoemBoemBatsiBa()
 {
-    int i;
-    byte imax = 0;
-    byte iblocked;
-    int dir2go;
+    unsigned long t0;
     GoNowhere();
-    for(i = 0; i < 4; i++)
-    {
-        if((distance[i] < distance[imax] && distance[i] > 10) || distance[imax] < 10) imax = i;
-    }
-    for(i = 0; i < 4; i++)
-    {
-        if(distance[i] < distance[iblocked]) iblocked = i;
-    }
-    if(distance[imax] > 20) imax = iblocked;
-    dir2go  = dirdeg[imax-2];
-    dir2go -= RELCOMPASSVAL;
-    while(dir2go < -179) dir2go += 360;
-    while(dir2go >  180) dir2go -= 360;
-    if(dir2go > -30 && dir2go < 30)
-    {
-        GoForward(100);
-        Wait(1000);
-    }
-    if(dir2go >= 30 && dir2go < 90)
+    TextOut(0, LCD_LINE7, "Richten...", DRAW_OPT_CLEAR_EOL);
+    TurnToSlow(10, 0, 100);
+    BallCheckReturn(); //also updates IR
+    while(USVAL < 60)
     {
         GoRF(100);
-        Wait(1000);
+        BallCheckReturn();
+        if(LIGHTVAL > WHITE)
+        {
+            GoOpposite();
+            Wait(300);
+        }
     }
-    if(dir2go >= 90 && dir2go < 150)
-    {
-        GoRB(100);
-        Wait(1000);
-    }
-    if(dir2go >= 150 && dir2go <= -150)
-    {
-        GoBackward(100);
-        Wait(1000);
-    }
-    if(dir2go > -150 && dir2go <= -90)
-    {
-        GoLB(100);
-        Wait(1000);
-    }
-    if(dir2go > -90 && dir2go <= -30);
+    while(USVAL > 120)
     {
         GoLF(100);
-        Wait(1000);
+        BallCheckReturn();
+        if(LIGHTVAL > WHITE)
+        {
+            GoOpposite();
+            Wait(300);
+        }
     }
-    if(everything == fail) destroy(self);
+    while(CurrentTick() - tlastkick < RECHARGINGTIME)
+    {
+        BallCheckReturn();
+    }
+    GoForward(100);
+    Wait(200);
+    Kick();
+    Wait(100);
 }
 
 task main()
@@ -70,10 +54,9 @@ task main()
         TextOut(0, LCD_LINE7, "Zoeken...", DRAW_OPT_CLEAR_EOL);
         
         if(LIGHTVAL > WHITE)
-        //if(false)
         {
             GoOpposite();
-            Wait(500);
+            Wait(300);
         }
         
         if(BALLDIRSTRAIGHT)
@@ -82,24 +65,45 @@ task main()
             {
                 Off(MOTORALL);
                 BoemBoemBatsiBa();
-                //ResetUS();
+                ResetUS();
             }
-            else
-            {
-                if(dist > BALLREALCLOSE) GoForward(60);
-                else if(dist > BALLSEMICLOSE) GoForward(90);
-                else GoForward(100);
-            }
+            else if(dist > BALLREALCLOSE) GoForward(85);
+            else if(dist > BALLSEMICLOSE) GoForward(100);
+            else GoForward(100);
         }
         else if(dir > 5)
         {
             lastballstate = dir;
-            TurnRight(40);
+            if(dist > POSSESSIONTHRESHOLD)
+            {
+                if(dir == 6) TurnRight(90);
+                else TurnRight(80);
+            }
+            else if(dist > BALLREALCLOSE)
+            {
+                if(dir == 6) GoRB(40);
+                else if(dir == 7) TurnRight(40);
+                else TurnRight(80);
+            }
+            else if(dir > 7) TurnRight(100);
+            else TurnRight(40);
         }
         else if(dir < 5)
         {
             lastballstate = dir;
-            TurnLeft(40);
+            if(dist > POSSESSIONTHRESHOLD)
+            {
+                if(dir == 4) TurnLeft(80);
+                else TurnLeft(80);
+            }
+            else if(dist > BALLREALCLOSE)
+            {
+                if(dir == 4) GoLB(40);
+                else if(dir == 7) TurnLeft(40);
+                else TurnLeft(80);
+            }
+            else if(dir < 3) TurnLeft(100);
+            else TurnLeft(40);
         }
         Yield();
     }
